@@ -1,144 +1,100 @@
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+# Statsig A/B Testing Custom Element for Kontent.ai
 
-[![Discord][discord-shield]][discord-url]
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/JiriLojda/statsig-custom-element-kontent-ai)
 
+A [Custom Element](https://kontent.ai/learn/docs/custom-elements) for Kontent.ai that integrates with [Statsig](https://statsig.com/) to enable A/B testing directly from the content management UI.
 
-# Kontent.ai React Custom Element Starter
+## Features
 
-This starter can be used to jumpstart your own custom element development with Kontent.ai. It contains all the necessary tools for creating a new [Custom Element](https://kontent.ai/learn/docs/custom-elements), a UI extension for content editors.
+- Create Statsig experiments directly from Kontent.ai content items
+- View experiment details (status, groups, hypothesis) within the custom element
+- Link content items to experiments for A/B testing
+- Quick access to the Statsig console for detailed experiment management
 
-You can inspire yourself by browsing already created integrations [**here**](https://github.com/topics/kontent-ai-integration).
+## Prerequisites
 
-If you wish to include your integration into the mentioned list, please add the **kontent-ai-integration** topic into your github integration repository. 
+Before running this custom element, you need:
 
-Additional Kontent.ai GitHub resources and tutorials can be found on [kontent-ai.github.io](https://kontent-ai.github.io/).
+1. **Statsig Account** - Sign up at [statsig.com](https://statsig.com/)
+2. **Statsig Console API Key** - Generate one from Statsig Console → Project Settings → API Keys → Console API Key (only accessed in Netlify Functions for security)
+3. **Netlify Account** (for deployment) - The element uses Netlify Functions as a backend proxy to securely call the Statsig API
 
-# Getting Started
+## Configuration
 
-## Running the project
+### Environment Variables
 
-The integration is created with [Vite](https://vitejs.dev/). 
+Set the following environment variable in your Netlify deployment:
 
-1. Install dependencies with `npm ci`.
-2. Run a local development server with `npm run dev`.
-3. To deploy the element you can use the output of running `npm run build` command that you can find in the `dist` folder.
+| Variable | Description |
+|----------|-------------|
+| `STATSIG_CONSOLE_KEY` | Your Statsig Console API Key (required) |
 
-See [Vite guide](https://vitejs.dev/guide/#command-line-interface) for more available commands.
+For local development, create a `.env` file in the project root:
 
-## Define your Element's API
-
-There are two main things that you'll need to define.
-* What configuration will your custom element need. (This is provided in the configuration when adding the custom element into a content type)
-* What value will the custom element save. In what format (the value needs to be serialized into string).
-
-You can define the shape of your configuration in the `src/customElement/config.ts` file along with a validation function that will show the user an error when the provided configuration is not valid.
-
-In the same way you can define the shape of your value in the `src/customElement/value.ts` file along with a parsing function from a string. Usually, the most flexible format is json serialized into the string.
-
-## Define your Element's height handling
-
-The width of the custom element is always the full width of the editing element in the Kontent.ai app. However, the height can be defined by the element itself.
-In the `src/main.tsx` file you can find the usage of the `CustomElementContext` where you can define the height of your element.
-It can either be a specific size in pixels, `"default"` to use the default value or `"dynamic"` to resize the element based on the height of the element's body element.
-
-## Write your Element
-
-You can start building the element in the `src/IntegrationApp.tsx` file where you can find example usage of several utilities defined in this repository that might come in useful.
-
-## Utilities in this repository
-
-### useConfig
-
-Use this hook to get the configuration provided for this custom element.
-The configuration will be valid based on the validation function you defined in `src/customElement/config.ts` and will be of the `Config` type also defined in the file.
-
-### useValue
-
-Use this hook to get the current value of the element and a function to update the value.
-The value will be parsed using the function defined in `src/customElement/value.ts` and will be of the `Value` type also defined in the file.
-Example:
-```ts
-const [value, setValue] = useValue();
+```
+STATSIG_CONSOLE_KEY=console-xxxxxxxxxxxxx
 ```
 
-### useIsDisabled
+### Kontent.ai Custom Element Configuration
 
-This hook indicates whether your element should appear disabled. (e.g. when the item is published or the user doesn't have permission to modify the item)
-It subscribes to changes so the returned value will always be up-to-date.
+When adding the custom element to a content type in Kontent.ai:
 
-### useEnvironmentId
+1. **Hosted code URL**: Point to your deployed Netlify site URL (or local dev URL for testing)
+2. **Parameters**: No additional configuration parameters are required
 
-Returns the environment id of this element's content item.
+## Getting Started
 
-### useItemInfo
+### Installation
 
-Gets information about the element's content item. 
-See the `ItemDetail` type in the `src/customElement/types/customElement.d.ts` file for details of available item information.
+```bash
+pnpm install
+```
 
-### useVariantInfo
+### Local Development
 
-Gets the element's language id and codename.
+```bash
+pnpm run dev
+```
 
-### useElements
+This starts Netlify Dev which runs both the Vite development server and the Netlify Functions locally.
 
-Use this hook to get values of the specified elements (accepts element codenames). 
-The hook subscribes to element changes so the returned values will always be up-to-date.
+### Build
 
-### promptToSelectItems
+```bash
+pnpm run build
+```
 
-Use this function to prompt the user to select content items.
-You can specify whether they should select only one or several.
-The function returns details of the selected items.
+The production build output is in the `dist` folder.
 
-### promptToSelectAssets
+## Architecture
 
-Use this function to prompt the user to select assets.
-You can specify whether they should select only one or several and whether they should only select images or any asset.
-The function returns details of the selected assets.
+### Frontend (Custom Element)
 
-# Structure of the Custom Element
+- Built with React and Vite
+- Stores the Statsig experiment ID as the element value (JSON format: `{ "experimentId": "..." }`)
+- Displays experiment details fetched from Statsig API
 
-## Static resources in the `index.html` file
+### Backend (Netlify Functions)
 
-Every Kontent.ai custom element needs the [Custom Element API](https://kontent.ai/learn/reference/custom-elements-js-api/) to work properly.
-This custom element is no exception and you can find it linked in the `index.html` template in the root of the repository.
+The custom element uses Netlify Functions to proxy requests to the Statsig Console API:
 
-Additionally, you can find there linked a CSS file from the `public` folder.
-This contains Kontent.ai styling that you can leverage to make your custom element look similar to the rest of the Kontent.ai app.
-It also includes Kontent.ai font.
+- `/.netlify/functions/get-experiment` - Fetches experiment details by name
+- `/.netlify/functions/create-experiment` - Creates a new experiment with default control/test groups (50/50 split)
 
-## `CustomElementContext`
+This architecture keeps your Statsig Console API Key secure on the server side.
 
-This is the core of the connection to the Custom Element API.
-You can find here the call to the `CustomElement.init` function that initializes the custom element and populates the React context with useful information like the element's value, config and so on.
-It also handles handles height of the custom element using the supplied prop `height`.
+## How It Works
 
-## `selectors.ts`
+1. **Creating an experiment**: Fill in the experiment name and optional hypothesis. The experiment is created in Statsig with two groups: control (50%) and test (50%)
+1. **Experiment linked**: The element displays the experiment status, groups, and provides a link to open it in the Statsig console
+1. **Unlink**: Remove the experiment association from the content item (does not delete the experiment in Statsig)
 
-Here you can find the implementation of most of the wrappers around the Custom Element API.
+## Deployment
 
-# Contributing
+1. Deploy to Netlify (connect your repository or use `netlify deploy`)
+1. Set the `STATSIG_CONSOLE_KEY` environment variable in Netlify site settings
+1. Use the deployed URL as the custom element's hosted code URL in Kontent.ai
 
-For Contributing please see  [`CONTRIBUTING.md`](CONTRIBUTING.md) for more information.
-
-# License
+## License
 
 Distributed under the MIT License. See [`LICENSE.md`](./LICENSE.md) for more information.
-
-
-[contributors-shield]: https://img.shields.io/github/contributors/kontent-ai/custom-element-starter-react.svg?style=for-the-badge
-[contributors-url]: https://github.com/kontent-ai/custom-element-starter-react/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/kontent-ai/custom-element-starter-react.svg?style=for-the-badge
-[forks-url]: https://github.com/kontent-ai/custom-element-starter-react/network/members
-[stars-shield]: https://img.shields.io/github/stars/kontent-ai/custom-element-starter-react.svg?style=for-the-badge
-[stars-url]: https://github.com/kontent-ai/custom-element-starter-react/stargazers
-[issues-shield]: https://img.shields.io/github/issues/kontent-ai/custom-element-starter-react.svg?style=for-the-badge
-[issues-url]:https://github.com/kontent-ai/custom-element-starter-react/issues
-[license-shield]: https://img.shields.io/github/license/kontent-ai/custom-element-starter-react.svg?style=for-the-badge
-[license-url]:https://github.com/kontent-ai/custom-element-starter-react/blob/master/LICENSE.md
-[discord-shield]: https://img.shields.io/discord/821885171984891914?color=%237289DA&label=Kontent.ai%20Discord&logo=discord&style=for-the-badge
-[discord-url]: https://discord.com/invite/SKCxwPtevJ
