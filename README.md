@@ -2,14 +2,48 @@
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/JiriLojda/statsig-custom-element-kontent-ai)
 
-A [Custom Element](https://kontent.ai/learn/docs/custom-elements) for Kontent.ai that integrates with [Statsig](https://statsig.com/) to enable A/B testing directly from the content management UI.
+A [Custom Element](https://kontent.ai/learn/docs/custom-elements) for easy A/B testing with Kontent.ai and [Statsig](https://statsig.com/).
 
-## Features
+![Statsig A/B Testing Custom Element for Kontent.ai](./docs/diagram.png)
 
-- Create Statsig experiments directly from Kontent.ai content items
-- View experiment details (status, groups, hypothesis) within the custom element
-- Link content items to experiments for A/B testing
-- Quick access to the Statsig console for detailed experiment management
+## How the Integration Works
+
+### 1. Content Modeling in Kontent.ai
+
+Create an **Experiment** content type with three elements:
+
+| Element | Type | Purpose |
+|---------|------|---------|
+| `statsig_a_b_testing` | Custom element (this one) | Stores the Statsig experiment ID |
+| `control` | Linked items | Content shown to users in the control group |
+| `test` | Linked items | Content shown to users in the test group |
+
+### 2. Statsig Experiment Setup
+
+The Statsig experiment must have exactly **two variants**, each with a parameter named `variant`:
+- First variant: `variant` = `control`
+- Second variant: `variant` = `test`
+
+When you create an experiment through this custom element, it automatically configures this for you with a 50/50 split.
+
+### 3. Connecting Content to Experiments
+
+Use the custom element to either:
+- **Create a new experiment** in Statsig directly from Kontent.ai
+- **Link an existing experiment** from your Statsig project
+
+The custom element stores the experiment ID in its value (as JSON: `{ "experimentId": "..." }`), creating the connection between your content item and the Statsig experiment.
+
+### 4. Frontend Resolution
+
+When your frontend app renders content containing an experiment:
+
+1. Read the experiment ID from the custom element's value
+2. Call Statsig SDK with the experiment ID and current user ID
+3. Statsig returns the winning variant (`control` or `test`) based on user assignment
+4. Render only the linked items from the winning variant, ignore the other
+
+See the [`example/`](./example/) folder for a minimal frontend implementation showing how to resolve experiment variants using the Statsig SDK with Kontent.ai rich text.
 
 ## Prerequisites
 
@@ -35,59 +69,21 @@ For local development, create a `.env` file in the project root:
 STATSIG_CONSOLE_KEY=console-xxxxxxxxxxxxx
 ```
 
-### Kontent.ai Custom Element Configuration
-
-When adding the custom element to a content type in Kontent.ai:
-
-1. **Hosted code URL**: Point to your deployed Netlify site URL (or local dev URL for testing)
-2. **Parameters**: No additional configuration parameters are required
-
 ## Getting Started
 
 ### Installation
 
 ```bash
-pnpm install
+pnpm i
 ```
 
 ### Local Development
 
 ```bash
-pnpm run dev
+pnpm dev
 ```
 
 This starts Netlify Dev which runs both the Vite development server and the Netlify Functions locally.
-
-### Build
-
-```bash
-pnpm run build
-```
-
-The production build output is in the `dist` folder.
-
-## Architecture
-
-### Frontend (Custom Element)
-
-- Built with React and Vite
-- Stores the Statsig experiment ID as the element value (JSON format: `{ "experimentId": "..." }`)
-- Displays experiment details fetched from Statsig API
-
-### Backend (Netlify Functions)
-
-The custom element uses Netlify Functions to proxy requests to the Statsig Console API:
-
-- `/.netlify/functions/get-experiment` - Fetches experiment details by name
-- `/.netlify/functions/create-experiment` - Creates a new experiment with default control/test groups (50/50 split)
-
-This architecture keeps your Statsig Console API Key secure on the server side.
-
-## How It Works
-
-1. **Creating an experiment**: Fill in the experiment name and optional hypothesis. The experiment is created in Statsig with two groups: control (50%) and test (50%)
-1. **Experiment linked**: The element displays the experiment status, groups, and provides a link to open it in the Statsig console
-1. **Unlink**: Remove the experiment association from the content item (does not delete the experiment in Statsig)
 
 ## Deployment
 
