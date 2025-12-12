@@ -18,6 +18,8 @@ Create an **Experiment** content type with three elements:
 | `control` | Linked items | Content shown to users in the control group |
 | `test` | Linked items | Content shown to users in the test group |
 
+You can create this content type manually or use the sync command to create it automatically (see [Syncing the Experiment Content Type](#syncing-the-experiment-content-type)).
+
 ### 2. Statsig Experiment Setup
 
 The Statsig experiment must have exactly **two variants**, each with a parameter named `variant`:
@@ -90,6 +92,40 @@ This starts Netlify Dev which runs both the Vite development server and the Netl
 1. Deploy to Netlify (connect your repository or use `netlify deploy`)
 1. Set the `STATSIG_CONSOLE_KEY` environment variable in Netlify site settings
 1. Use the deployed URL as the custom element's hosted code URL in Kontent.ai
+
+## Syncing the Experiment Content Type
+
+Instead of manually creating the Experiment content type, you can automatically sync it to your Kontent.ai project using the included sync script.
+
+### Prerequisites
+
+1. Your Kontent.ai environment ID
+2. A Management API key with permissions to modify content types
+3. The deployed HTTPS URL of your custom element
+
+### Configuration
+
+Set the following environment variables in your `.env` file (copy from `.env.example`):
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `KONTENT_ENVIRONMENT_ID` | Yes | Target Kontent.ai environment ID |
+| `KONTENT_MANAGEMENT_API_KEY` | Yes | Management API key |
+| `CUSTOM_ELEMENT_URL` | Yes | HTTPS URL where the custom element is deployed |
+| `CONTENT_TYPE_CODENAME` | No | Custom codename (default: `statsig_experiment`) |
+
+### Usage
+
+```bash
+pnpm sync:content-type
+```
+
+This creates a content type with:
+- **Statsig A/B Testing** (`statsig_a_b_testing`) - Custom element pointing to your deployed URL
+- **Control** (`control`) - Linked items for the control variant
+- **Test** (`test`) - Linked items for the test variant
+
+If a content type with the same codename already exists, it will be updated to match the expected structure.
 
 ## License
 
