@@ -1,0 +1,45 @@
+{
+  "contentItems": [
+    {
+      "name": "Homepage CTA Experiment",
+      "codename": "homepage_cta_experiment",
+      "type": {
+        "codename": "statsig_experiment"
+      },
+      "collection": {
+        "codename": "default"
+      },
+      "external_id": null
+    }
+  ],
+  "languageVariants": [
+    {
+      "item": {
+        "codename": "homepage_cta_experiment"
+      },
+      "language": {
+        "codename": "default"
+      },
+      "elements": [
+        {
+          "element": {
+            "codename": "statsig_a_b_testing"
+          },
+          "value": "{\"experimentId\":\"sample_homepage_experiment\"}"
+        },
+        {
+          "element": {
+            "codename": "control"
+          },
+          "value": []
+        },
+        {
+          "element": {
+            "codename": "test"
+          },
+          "value": []
+        }
+      ]
+    }
+  ]
+}

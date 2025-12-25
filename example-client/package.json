@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "import:content-type": "npx @kontent-ai/data-ops@latest environment import --fileName data-ops-backup/content-types/statsig_experiment.json",
+    "import:content": "npx @kontent-ai/data-ops@latest environment import --fileName data-ops-backup/content-items/sample_experiment.json"
   },
   "dependencies": {
     "@kontent-ai/rich-text-resolver": "^2.0.4",

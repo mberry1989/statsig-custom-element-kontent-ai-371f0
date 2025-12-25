@@ -1,0 +1,43 @@
+{
+  "contentTypes": [
+    {
+      "name": "Statsig Experiment",
+      "codename": "statsig_experiment",
+      "external_id": null,
+      "content_groups": [],
+      "elements": [
+        {
+          "name": "Statsig A/B Testing",
+          "codename": "statsig_a_b_testing",
+          "type": "custom",
+          "source_url": "https://YOUR_DEPLOYED_URL_HERE",
+          "json_parameters": null,
+          "allowed_elements": [],
+          "guidelines": "Links this content item to a Statsig experiment. Create a new experiment or select an existing one.",
+          "is_required": true,
+          "is_non_localizable": false
+        },
+        {
+          "name": "Control",
+          "codename": "control",
+          "type": "modular_content",
+          "item_count_limit": null,
+          "allowed_content_types": [],
+          "guidelines": "Content shown to users in the control group (variant A).",
+          "is_required": false,
+          "is_non_localizable": false
+        },
+        {
+          "name": "Test",
+          "codename": "test",
+          "type": "modular_content",
+          "item_count_limit": null,
+          "allowed_content_types": [],
+          "guidelines": "Content shown to users in the test group (variant B).",
+          "is_required": false,
+          "is_non_localizable": false
+        }
+      ]
+    }
+  ]
+}
