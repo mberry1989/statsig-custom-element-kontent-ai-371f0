@@ -12,7 +12,6 @@ const corsHeaders = {
 type CreateExperimentBody = {
   readonly name: string;
   readonly hypothesis?: string;
-  readonly description?: string;
 };
 
 export const handler: Handler = async (event: HandlerEvent) => {
@@ -66,7 +65,6 @@ export const handler: Handler = async (event: HandlerEvent) => {
       name: body.name,
       idType: 'userID',
       hypothesis: body.hypothesis ?? '',
-      description: body.description ?? '',
       groups: [
         { name: 'control', size: 50, parameterValues: { variant: 'control' } },
         { name: 'test', size: 50, parameterValues: { variant: 'test' } },
