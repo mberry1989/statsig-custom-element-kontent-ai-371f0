@@ -1,9 +1,8 @@
-import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useValue, useItemInfo, useIsDisabled } from '../customElement/CustomElementContext';
 import { getExperiment } from '../api/statsig';
 import { ExperimentDetails } from './ExperimentDetails';
 import { CreateExperiment } from './CreateExperiment';
-import { useAsyncConditional } from '../hooks/useAsync';
 import { SpinnerIcon } from '../icons/SpinnerIcon';
 import { ErrorIcon } from '../icons/ErrorIcon';
 import styles from './StatsigExperiment.module.css';
@@ -15,18 +14,11 @@ export const StatsigExperiment = () => {
 
   const experimentId = value?.experimentId ?? null;
 
-  const asyncFn = useMemo(
-    () => experimentId ? async () => {
-      const experiment = await getExperiment(experimentId);
-      return experiment;
-    } : null,
-    [experimentId]
-  );
-
-  const { data: experiment, isLoading, error, refetch } = useAsyncConditional(
-    asyncFn,
-    [experimentId]
-  );
+  const { data: experiment, isLoading, error, refetch } = useQuery({
+    queryKey: ['experiment', experimentId],
+    queryFn: () => getExperiment(experimentId!),
+    enabled: Boolean(experimentId),
+  });
 
   const handleCreated = (newExperimentId: string) => {
     setValue({ experimentId: newExperimentId });

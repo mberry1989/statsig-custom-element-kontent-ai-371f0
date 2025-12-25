@@ -1,7 +1,6 @@
 import { type FC, useCallback, useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { createExperiment, listExperiments } from '../api/statsig';
-import { useMutation } from '../hooks/useMutation';
-import { useAsync } from '../hooks/useAsync';
 import { SelectExperimentModal } from './SelectExperimentModal';
 import { LightbulbIcon } from '../icons/LightbulbIcon';
 import { SpinnerIcon } from '../icons/SpinnerIcon';
@@ -25,7 +24,10 @@ export const CreateExperiment: FC<CreateExperimentProps> = ({ itemInfo, onCreate
   const [experimentName, setExperimentName] = useState(itemInfo.codename);
   const [hypothesis, setHypothesis] = useState('');
 
-  const { data: experiments, isLoading: isLoadingExperiments } = useAsync(listExperiments, []);
+  const { data: experiments, isLoading: isLoadingExperiments } = useQuery({
+    queryKey: ['experiments'],
+    queryFn: listExperiments,
+  });
   
   const openForm = useCallback(() => {
     setIsFormOpen(true);
@@ -48,7 +50,8 @@ export const CreateExperiment: FC<CreateExperimentProps> = ({ itemInfo, onCreate
     closeSelectModal();
   }, [onCreated, closeSelectModal]);
 
-  const mutation = useMutation(createExperiment, {
+  const mutation = useMutation({
+    mutationFn: createExperiment,
     onSuccess: (experiment) => {
       onCreated(experiment.id);
       closeForm();
