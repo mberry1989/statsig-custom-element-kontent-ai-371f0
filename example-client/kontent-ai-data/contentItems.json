@@ -1,0 +1,102 @@
+{
+  "items": [
+    {
+      "system": {
+        "name": "Control CTA",
+        "codename": "control_cta",
+        "collection": { "codename": "default" },
+        "language": { "codename": "default" },
+        "type": { "codename": "text_block" },
+        "workflow": { "codename": "default" }
+      },
+      "versions": [
+        {
+          "workflow_step": { "codename": "draft" },
+          "elements": {
+            "text": { "type": "text", "value": "Sign up for our newsletter!" }
+          }
+        }
+      ]
+    },
+    {
+      "system": {
+        "name": "Test CTA",
+        "codename": "test_cta",
+        "collection": { "codename": "default" },
+        "language": { "codename": "default" },
+        "type": { "codename": "text_block" },
+        "workflow": { "codename": "default" }
+      },
+      "versions": [
+        {
+          "workflow_step": { "codename": "draft" },
+          "elements": {
+            "text": { "type": "text", "value": "Get 20% off when you subscribe today!" }
+          }
+        }
+      ]
+    },
+    {
+      "system": {
+        "name": "Homepage CTA Experiment",
+        "codename": "homepage_cta_experiment",
+        "collection": { "codename": "default" },
+        "language": { "codename": "default" },
+        "type": { "codename": "statsig_experiment" },
+        "workflow": { "codename": "default" }
+      },
+      "versions": [
+        {
+          "workflow_step": { "codename": "draft" },
+          "elements": {
+            "statsig_a_b_testing": { "type": "custom", "value": null },
+            "control": { "type": "modular_content", "value": [{ "codename": "control_cta" }] },
+            "test": { "type": "modular_content", "value": [{ "codename": "test_cta" }] }
+          }
+        }
+      ]
+    },
+    {
+      "system": {
+        "name": "Homepage",
+        "codename": "homepage",
+        "collection": { "codename": "default" },
+        "language": { "codename": "default" },
+        "type": { "codename": "landing_page" },
+        "workflow": { "codename": "default" }
+      },
+      "versions": [
+        {
+          "workflow_step": { "codename": "draft" },
+          "elements": {
+            "title": { "type": "text", "value": "Welcome to Our Store" },
+            "experiments": { "type": "modular_content", "value": [{ "codename": "homepage_cta_experiment" }] }
+          }
+        }
+      ]
+    },
+    {
+      "system": {
+        "name": "Sample Article",
+        "codename": "sample_article",
+        "collection": { "codename": "default" },
+        "language": { "codename": "default" },
+        "type": { "codename": "article_page" },
+        "workflow": { "codename": "default" }
+      },
+      "versions": [
+        {
+          "workflow_step": { "codename": "draft" },
+          "elements": {
+            "title": { "type": "text", "value": "Welcome to Our Newsletter" },
+            "body": {
+              "type": "rich_text",
+              "value": "<p>Welcome to our website!</p><p>Thank you for visiting.</p>"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "assets": []
+}

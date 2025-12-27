@@ -5,30 +5,75 @@ Minimal example demonstrating how to resolve A/B test variants using the Statsig
 1. **Component in Rich Text** - Experiments embedded inline within rich text content
 2. **Linked Items** - Experiments as linked items in a content type
 
+> [!WARNING]
+> This example is intended for **test/temporary Kontent.ai projects only**. The sync scripts will create content types and items in your environment. Do not run these scripts on production projects.
+
 ## Prerequisites
 
-- Statsig account with a **Client SDK Key** (from Project Settings → Keys & Environments)
-- An existing experiment in Statsig to test with
+- **Kontent.ai account** with a test environment
+  - Environment ID (from Environment settings)
+  - Management API Key (for importing content)
+- **Statsig account** with:
+  - Client SDK Key (from Project Settings → Keys & Environments)
+  - An experiment to test with
 
 ## Quick Start
 
-1. Copy the environment template:
-   ```bash
-   cp .env.template .env
-   ```
+### 1. Deploy the Custom Element
 
-2. **Required**: Edit `.env` and configure both variables:
-   - `VITE_STATSIG_CLIENT_KEY` - Your Statsig Client SDK Key
-   - `VITE_EXPERIMENT_ID` - The ID of an experiment in your Statsig project
+First, deploy the Statsig custom element. See the [main project README](../README.md) for deployment instructions.
 
-3. Install and run:
-   ```bash
-   pnpm i
-   pnpm dev
-   ```
+### 2. Configure Environment Variables
 
-> [!IMPORTANT]
-> The application will not start without valid environment variables. Make sure to configure both values in your `.env` file before running.
+```bash
+cp .env.template .env
+```
+
+Edit `.env` and configure:
+- `VITE_STATSIG_CLIENT_KEY` - Your Statsig Client SDK Key
+- `VITE_KONTENT_ENVIRONMENT_ID` - Your Kontent.ai environment ID
+- `KONTENT_MANAGEMENT_API_KEY` - Your Management API key (for import only, not exposed to browser)
+
+### 3. Update Custom Element URL
+
+Edit `kontent-ai-data/contentTypes.json`, find the `statsig_experiment` entry, and replace `YOUR_DEPLOYED_URL_HERE` in `source_url` with your deployed custom element URL.
+
+### 4. Sync Content to Kontent.ai
+
+Install dependencies and sync all content types and sample content:
+
+```bash
+pnpm install
+pnpm sync:all
+```
+
+This creates:
+- **Content types**: text_block, statsig_experiment, landing_page, article_page
+- **Content items**: Sample text blocks, experiment, landing page, and article page
+
+> [!NOTE]
+> The sync command uses [@kontent-ai/data-ops](https://github.com/kontent-ai/data-ops) for content types and [@kontent-ai/migration-toolkit](https://github.com/kontent-ai/migration-toolkit) for content items. It works safely on non-empty projects - only the specified types are synced, existing types are not affected.
+
+### 5. Publish Content in Kontent.ai
+
+After importing, open your Kontent.ai environment and **publish all imported content items**. The Delivery API only returns published content.
+
+### 6. Create a Statsig Experiment
+
+1. In Kontent.ai, open the **Homepage CTA Experiment** content item
+2. In the Statsig A/B Testing custom element, click **Create New** to create an experiment
+3. In Statsig, start the experiment
+
+### 7. Run the Example
+
+```bash
+pnpm dev
+```
+
+Open http://localhost:5173 to see the experiment in action.
+
+> [!TIP]
+> To see different variants, clear your browser's localStorage to get a new user ID, or manually change the user ID.
 
 ## Pattern 1: Component in Rich Text
 
@@ -59,47 +104,26 @@ Both patterns use the same underlying resolution logic:
 > [!TIP]
 > **Terminology note**: The term "winning variant" refers to the variant assigned to the current user during an active experiment. Statsig deterministically assigns each user to a variant based on their user ID, ensuring they always see the same experience. This is different from Kontent.ai language variants - here "variant" refers to the experiment groups (control/test).
 
-## Setting up Kontent.ai Content
+## Troubleshooting
 
-This example uses mock data by default. To test with real Kontent.ai content, you can import the experiment content type and sample items using the [Kontent.ai Data-Ops CLI](https://github.com/kontent-ai/data-ops).
+### "Error loading content" message
 
-### Prerequisites
+- Make sure you ran `pnpm sync:all` successfully
+- Verify all content items are **published** in Kontent.ai
+- Check that `VITE_KONTENT_ENVIRONMENT_ID` is correct
 
-- A Kontent.ai environment with Management API access
-- The deployed custom element URL (see [main project README](../README.md))
+### "Missing environment variable" error
 
-### Import Content Type
+- Ensure `.env` file exists and all required variables are set
+- The app requires both `VITE_STATSIG_CLIENT_KEY` and `VITE_KONTENT_ENVIRONMENT_ID`
 
-1. Update the `source_url` in `data-ops-backup/content-types/statsig_experiment.json` with your deployed custom element URL
+### Sync fails
 
-2. Import the content type:
-   ```bash
-   pnpm import:content-type
-   ```
+- Verify your `KONTENT_MANAGEMENT_API_KEY` has write permissions
+- Make sure the custom element URL is updated in `statsig_experiment.json`
 
-   Or manually:
-   ```bash
-   npx @kontent-ai/data-ops@latest environment import \
-     --environmentId <YOUR_ENVIRONMENT_ID> \
-     --apiKey <YOUR_MANAGEMENT_API_KEY> \
-     --fileName data-ops-backup/content-types/statsig_experiment.json
-   ```
+### Variant not changing
 
-### Import Sample Content (Optional)
-
-After importing the content type, you can import a sample experiment:
-
-```bash
-pnpm import:content
-```
-
-Or manually:
-```bash
-npx @kontent-ai/data-ops@latest environment import \
-  --environmentId <YOUR_ENVIRONMENT_ID> \
-  --apiKey <YOUR_MANAGEMENT_API_KEY> \
-  --fileName data-ops-backup/content-items/sample_experiment.json
-```
-
-> [!NOTE]
-> The sample experiment uses placeholder values. After importing, update the experiment ID to match your Statsig experiment and add content items to the control/test linked items.
+- Statsig assigns variants deterministically by user ID
+- Clear localStorage to reset user ID: `localStorage.removeItem('statsig_user_id')`
+- Verify the experiment is running in Statsig (not paused or stopped)

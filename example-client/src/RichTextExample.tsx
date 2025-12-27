@@ -1,11 +1,15 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, type FC } from 'react';
 import { useStatsigClient } from '@statsig/react-bindings';
 import { transformToPortableText } from '@kontent-ai/rich-text-resolver';
 import { PortableText } from '@kontent-ai/rich-text-resolver/utils/react';
 import { createExperimentAwareResolvers } from './experimentResolver';
-import { mockRichTextValue, mockLinkedItems, type ExperimentVariant } from './mockData';
+import type { ArticlePage, ExperimentVariant, StatsigExperiment } from './types';
 
-export const RichTextExample = () => {
+type RichTextExampleProps = {
+  readonly articlePage: ArticlePage;
+};
+
+export const RichTextExample: FC<RichTextExampleProps> = ({ articlePage }) => {
   const { client } = useStatsigClient();
 
   const getWinningVariant = useCallback(
@@ -16,16 +20,26 @@ export const RichTextExample = () => {
     [client],
   );
 
+  // Rich text linked items are loosely typed - cast through unknown for specific types
+  const linkedItems = articlePage.elements.body.linkedItems as unknown as ReadonlyArray<StatsigExperiment>;
+
   const resolvers = useMemo(
-    () => createExperimentAwareResolvers(mockLinkedItems, getWinningVariant),
-    [getWinningVariant],
+    () => createExperimentAwareResolvers(linkedItems, getWinningVariant),
+    [linkedItems, getWinningVariant],
   );
 
-  const portableText = useMemo(() => transformToPortableText(mockRichTextValue), []);
+  const portableText = useMemo(
+    () => transformToPortableText(articlePage.elements.body.value),
+    [articlePage.elements.body.value],
+  );
 
   return (
     <div>
       <h2>Rich Text Component Example</h2>
+      <p>
+        <strong>Article:</strong> {articlePage.elements.title.value}
+      </p>
+      <hr />
       <PortableText value={portableText} components={resolvers} />
 
       <hr />

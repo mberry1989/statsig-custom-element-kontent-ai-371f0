@@ -1,46 +1,40 @@
 import { Fragment, type JSX } from 'react';
+import type { IContentItem } from '@kontent-ai/delivery-sdk';
 import type { PortableTextReactResolvers } from '@kontent-ai/rich-text-resolver/utils/react';
-import { parseExperimentId } from './parseExperimentId';
-import type { ContentItem, ExperimentVariant } from './mockData';
+import type { ExperimentVariant, StatsigExperiment, TextBlock } from './types';
+import { parseExperimentId } from './types';
 
 type GetWinningVariant = (experimentId: string) => ExperimentVariant;
 
-type ExperimentElements = {
-  readonly statsig_a_b_testing: { readonly value: string };
-  readonly control: { readonly linkedItems: ReadonlyArray<ContentItem> };
-  readonly test: { readonly linkedItems: ReadonlyArray<ContentItem> };
-};
+type ContentItem = IContentItem;
 
-type TextBlockElements = {
-  readonly text: { readonly value: string };
-};
-
-const renderTextBlock = (item: ContentItem): JSX.Element => {
-  const elements = item.elements as TextBlockElements;
-  return <p>{elements.text.value}</p>;
+const renderTextBlock = (item: TextBlock): JSX.Element => {
+  return <p>{item.elements.text.value}</p>;
 };
 
 export const renderContentItem = (item: ContentItem, getWinningVariant: GetWinningVariant): JSX.Element | null => {
   switch (item.system.type) {
     case 'text_block':
-      return renderTextBlock(item);
-    case 'experiment':
-      return renderExperiment(item, getWinningVariant);
+      return renderTextBlock(item as TextBlock);
+    case 'statsig_experiment':
+      return renderExperiment(item as StatsigExperiment, getWinningVariant);
     default:
       return <div>Unknown content type: {item.system.type}</div>;
   }
 };
 
 const renderExperiment = (
-  item: ContentItem,
+  item: StatsigExperiment,
   getWinningVariant: GetWinningVariant,
 ): JSX.Element => {
-  const elements = item.elements as ExperimentElements;
-  const experimentId = parseExperimentId(elements.statsig_a_b_testing.value);
-  const variant = getWinningVariant(experimentId);
+  const experimentId = parseExperimentId(item.elements.statsig_a_b_testing.value);
 
-  const winningItems =
-    variant === 'control' ? elements.control.linkedItems : elements.test.linkedItems;
+  if (!experimentId) {
+    return <div>Error: Missing experiment ID in content item: {item.system.codename}</div>;
+  }
+
+  const variant = getWinningVariant(experimentId);
+  const winningItems = item.elements[variant].linkedItems;
 
   return (
     <div className="experiment-content">

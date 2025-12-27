@@ -2,7 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_STATSIG_CLIENT_KEY: string;
-  readonly VITE_EXPERIMENT_ID: string;
+  readonly VITE_KONTENT_ENVIRONMENT_ID: string;
 }
 
 interface ImportMeta {

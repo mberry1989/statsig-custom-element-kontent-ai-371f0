@@ -1,13 +1,13 @@
-import { Fragment, useCallback } from 'react';
+import { Fragment, useCallback, type FC } from 'react';
 import { useStatsigClient } from '@statsig/react-bindings';
 import { renderContentItem } from './experimentResolver';
-import {
-  mockLandingPage,
-  type ExperimentVariant,
-  type LandingPageElements,
-} from './mockData';
+import type { LandingPage, ExperimentVariant } from './types';
 
-export const LinkedItemExample = () => {
+type LinkedItemExampleProps = {
+  readonly landingPage: LandingPage;
+};
+
+export const LinkedItemExample: FC<LinkedItemExampleProps> = ({ landingPage }) => {
   const { client } = useStatsigClient();
 
   const getWinningVariant = useCallback(
@@ -18,21 +18,19 @@ export const LinkedItemExample = () => {
     [client],
   );
 
-  const pageElements = mockLandingPage.elements as LandingPageElements;
-
   return (
     <div>
       <h2>Linked Item Example</h2>
       <p>
-        <strong>Content Type:</strong> <code>{mockLandingPage.system.type}</code>
+        <strong>Content Type:</strong> <code>{landingPage.system.type}</code>
       </p>
       <p>
-        <strong>Page Title:</strong> {pageElements.title.value}
+        <strong>Page Title:</strong> {landingPage.elements.title.value}
       </p>
       <hr />
 
       <h3>Experiments (from linked items element)</h3>
-      {pageElements.experiments.linkedItems.map((item) => (
+      {landingPage.elements.experiments.linkedItems.map((item) => (
         <Fragment key={item.system.id}>{renderContentItem(item, getWinningVariant)}</Fragment>
       ))}
 

@@ -1,0 +1,116 @@
+[
+  {
+    "name": "Text Block",
+    "codename": "text_block",
+    "content_groups": [],
+    "elements": [
+      {
+        "name": "Text",
+        "codename": "text",
+        "type": "text",
+        "guidelines": "The text content of this block.",
+        "is_required": true,
+        "is_non_localizable": false
+      }
+    ]
+  },
+  {
+    "name": "Statsig Experiment",
+    "codename": "statsig_experiment",
+    "content_groups": [],
+    "elements": [
+      {
+        "name": "Statsig A/B Testing",
+        "codename": "statsig_a_b_testing",
+        "type": "custom",
+        "source_url": "https://localhost:8888",
+        "allowed_elements": [],
+        "guidelines": "Links this content item to a Statsig experiment. Create a new experiment or select an existing one.",
+        "is_required": true,
+        "is_non_localizable": false
+      },
+      {
+        "name": "Control",
+        "codename": "control",
+        "type": "modular_content",
+        "allowed_content_types": [],
+        "guidelines": "Content shown to users in the control group (variant A).",
+        "is_required": false,
+        "is_non_localizable": false
+      },
+      {
+        "name": "Test",
+        "codename": "test",
+        "type": "modular_content",
+        "allowed_content_types": [],
+        "guidelines": "Content shown to users in the test group (variant B).",
+        "is_required": false,
+        "is_non_localizable": false
+      }
+    ]
+  },
+  {
+    "name": "Landing Page",
+    "codename": "landing_page",
+    "content_groups": [],
+    "elements": [
+      {
+        "name": "Title",
+        "codename": "title",
+        "type": "text",
+        "guidelines": "The title of the landing page.",
+        "is_required": true,
+        "is_non_localizable": false
+      },
+      {
+        "name": "Experiments",
+        "codename": "experiments",
+        "type": "modular_content",
+        "allowed_content_types": [
+          {
+            "codename": "statsig_experiment"
+          }
+        ],
+        "guidelines": "Experiments to run on this page. Each experiment links to a Statsig experiment and contains control/test content variants.",
+        "is_required": false,
+        "is_non_localizable": false
+      }
+    ]
+  },
+  {
+    "name": "Article Page",
+    "codename": "article_page",
+    "content_groups": [],
+    "elements": [
+      {
+        "name": "Title",
+        "codename": "title",
+        "type": "text",
+        "guidelines": "The title of the article.",
+        "is_required": true,
+        "is_non_localizable": false
+      },
+      {
+        "name": "Body",
+        "codename": "body",
+        "type": "rich_text",
+        "allowed_content_types": [
+          {
+            "codename": "statsig_experiment"
+          }
+        ],
+        "allowed_blocks": [],
+        "allowed_formatting": [],
+        "allowed_image_types": "any",
+        "allowed_text_blocks": [],
+        "allowed_table_blocks": [],
+        "allowed_item_link_types": [],
+        "allowed_table_formatting": [],
+        "allowed_table_text_blocks": [],
+        "guidelines": "The main body content. You can embed Statsig experiments as components.",
+        "is_required": false,
+        "is_non_localizable": false
+      }
+    ]
+  }
+]
