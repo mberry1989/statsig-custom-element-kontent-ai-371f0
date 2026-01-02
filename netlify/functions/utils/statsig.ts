@@ -1,13 +1,16 @@
-const STATSIG_API_URL = 'https://statsigapi.net/console/v1';
-const API_VERSION = '20240601';
+const STATSIG_API_URL = "https://statsigapi.net/console/v1";
+const API_VERSION = "20240601";
 
 type StatsigApiResponse = { readonly data?: UnknownJson; readonly message?: string };
 
-export const getExperiment = async (experimentId: string, apiKey: string): Result<UnknownJson | null> => {
+export const getExperiment = async (
+  experimentId: string,
+  apiKey: string,
+): Result<UnknownJson | null> => {
   const response = await fetch(`${STATSIG_API_URL}/experiments/${experimentId}`, {
     headers: {
-      'STATSIG-API-KEY': apiKey,
-      'STATSIG-API-VERSION': API_VERSION,
+      "STATSIG-API-KEY": apiKey,
+      "STATSIG-API-VERSION": API_VERSION,
     },
   });
 
@@ -18,7 +21,7 @@ export const getExperiment = async (experimentId: string, apiKey: string): Resul
     return { success: false, error: await response.text() };
   }
 
-  const result = await response.json() as StatsigApiResponse;
+  const result = (await response.json()) as StatsigApiResponse;
 
   return { success: true, result: result.data ?? {} };
 };
@@ -26,8 +29,8 @@ export const getExperiment = async (experimentId: string, apiKey: string): Resul
 export const listExperiments = async (apiKey: string): Result<UnknownJson> => {
   const response = await fetch(`${STATSIG_API_URL}/experiments`, {
     headers: {
-      'STATSIG-API-KEY': apiKey,
-      'STATSIG-API-VERSION': API_VERSION,
+      "STATSIG-API-KEY": apiKey,
+      "STATSIG-API-VERSION": API_VERSION,
     },
   });
 
@@ -35,7 +38,7 @@ export const listExperiments = async (apiKey: string): Result<UnknownJson> => {
     return { success: false, error: await response.text() };
   }
 
-  const result = await response.json() as UnknownJson;
+  const result = (await response.json()) as UnknownJson;
 
   return { success: true, result };
 };
@@ -46,22 +49,25 @@ type CreateParams = Readonly<{
   description?: string;
 }>;
 
-export const createExperiment = async (apiKey: string, params: CreateParams): Result<UnknownJson> => {
+export const createExperiment = async (
+  apiKey: string,
+  params: CreateParams,
+): Result<UnknownJson> => {
   const response = await fetch(`${STATSIG_API_URL}/experiments`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'STATSIG-API-KEY': apiKey,
-      'STATSIG-API-VERSION': API_VERSION,
-      'Content-Type': 'application/json',
+      "STATSIG-API-KEY": apiKey,
+      "STATSIG-API-VERSION": API_VERSION,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       name: params.name,
-      idType: 'userID',
-      hypothesis: params.hypothesis ?? '',
-      description: params.description ?? '',
+      idType: "userID",
+      hypothesis: params.hypothesis ?? "",
+      description: params.description ?? "",
       groups: [
-        { name: 'control', size: 50, parameterValues: { variant: 'control' } },
-        { name: 'test', size: 50, parameterValues: { variant: 'test' } },
+        { name: "control", size: 50, parameterValues: { variant: "control" } },
+        { name: "test", size: 50, parameterValues: { variant: "test" } },
       ],
     }),
   });
@@ -70,7 +76,7 @@ export const createExperiment = async (apiKey: string, params: CreateParams): Re
     return { success: false, error: await response.text() };
   }
 
-  const result = await response.json() as StatsigApiResponse;
+  const result = (await response.json()) as StatsigApiResponse;
 
   return { success: true, result: result.data ?? {} };
 };
@@ -79,15 +85,15 @@ export const concludeExperiment = async (
   experimentId: string,
   winningGroupId: string,
   decisionReason: string,
-  apiKey: string
+  apiKey: string,
 ): Result<null> => {
   try {
     const response = await fetch(`${STATSIG_API_URL}/experiments/${experimentId}/make_decision`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'STATSIG-API-KEY': apiKey,
-        'STATSIG-API-VERSION': API_VERSION,
-        'Content-Type': 'application/json',
+        "STATSIG-API-KEY": apiKey,
+        "STATSIG-API-VERSION": API_VERSION,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         id: winningGroupId,
@@ -97,7 +103,7 @@ export const concludeExperiment = async (
     });
 
     if (!response.ok) {
-      const data = await response.json() as StatsigApiResponse;
+      const data = (await response.json()) as StatsigApiResponse;
       return {
         success: false,
         error: data.message ?? `Failed to conclude experiment: ${response.status}`,
@@ -108,11 +114,13 @@ export const concludeExperiment = async (
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error concluding experiment',
+      error: error instanceof Error ? error.message : "Unknown error concluding experiment",
     };
   }
 };
 
-type Result<R> = Promise<Readonly<{ success: true; result: R } | { success: false; error: string }>>;
+type Result<R> = Promise<
+  Readonly<{ success: true; result: R } | { success: false; error: string }>
+>;
 
 type UnknownJson = Readonly<Record<string, unknown>>;

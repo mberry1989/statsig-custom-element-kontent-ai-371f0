@@ -1,6 +1,6 @@
-import type { Handler, HandlerEvent } from '@netlify/functions';
-import { expectEnvVars, handleCorsRequests, responses } from './utils/http';
-import { listExperiments } from './utils/statsig';
+import type { Handler, HandlerEvent } from "@netlify/functions";
+import { expectEnvVars, handleCorsRequests, responses } from "./utils/http.ts";
+import { listExperiments } from "./utils/statsig.ts";
 
 const allowedMethods = ["GET"] as const;
 
@@ -15,7 +15,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
     return varsRes.response;
   }
   const [apiKey] = varsRes.result;
-  
+
   const result = await listExperiments(apiKey);
 
   if (!result.success) {

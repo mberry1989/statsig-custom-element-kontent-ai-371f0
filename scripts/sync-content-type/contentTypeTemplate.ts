@@ -28,7 +28,7 @@ type ContentTypeDefinition = Readonly<{
 
 export const createExperimentContentType = (
   codename: string,
-  customElementUrl: string
+  customElementUrl: string,
 ): ContentTypeDefinition => ({
   name: "Statsig Experiment",
   codename,

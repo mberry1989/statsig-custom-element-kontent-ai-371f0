@@ -1,12 +1,12 @@
-import type { FC } from 'react';
-import type { StatsigExperiment } from '../types';
-import { getExperimentConsoleUrl } from '../api/statsig';
-import { StatusBadge } from './StatusBadge';
-import { ExperimentVariants } from './ExperimentVariants';
-import { CheckIcon } from '../icons/CheckIcon';
-import { ExternalLinkIcon } from '../icons/ExternalLinkIcon';
-import { TrophyIcon } from '../icons/TrophyIcon';
-import styles from './ExperimentDetails.module.css';
+import type { FC } from "react";
+import { getExperimentConsoleUrl } from "../api/statsig.ts";
+import { CheckIcon } from "../icons/CheckIcon.tsx";
+import { ExternalLinkIcon } from "../icons/ExternalLinkIcon.tsx";
+import { TrophyIcon } from "../icons/TrophyIcon.tsx";
+import type { StatsigExperiment } from "../types/index.ts";
+import styles from "./ExperimentDetails.module.css";
+import { ExperimentVariants } from "./ExperimentVariants.tsx";
+import { StatusBadge } from "./StatusBadge.tsx";
 
 type ExperimentDetailsProps = {
   readonly experiment: StatsigExperiment;
@@ -15,7 +15,12 @@ type ExperimentDetailsProps = {
   readonly isDisabled: boolean;
 };
 
-export const ExperimentDetails: FC<ExperimentDetailsProps> = ({ experiment, onUnlink, onConclude, isDisabled }) => (
+export const ExperimentDetails: FC<ExperimentDetailsProps> = ({
+  experiment,
+  onUnlink,
+  onConclude,
+  isDisabled,
+}) => (
   <div className={styles.card}>
     <div className={styles.header}>
       <div className={styles.titleGroup}>
@@ -42,29 +47,22 @@ export const ExperimentDetails: FC<ExperimentDetailsProps> = ({ experiment, onUn
 
       {!isDisabled && (
         <div className={styles.actionButtons}>
-          {experiment.status === 'active' && onConclude ? (
-<button
-  type="button"
-  onClick={onConclude}
-  className={styles.concludeButton}
-            >
+          {experiment.status === "active" && onConclude ? (
+            <button type="button" onClick={onConclude} className={styles.concludeButton}>
               <TrophyIcon className={styles.concludeIcon} />
               Conclude
             </button>
-) : null}
-          {experiment.status !== 'active' && (
+          ) : null}
+          {experiment.status !== "active" && (
             <span
               className={styles.concludeDisabled}
-              title="Only active experiments can be concluded">
+              title="Only active experiments can be concluded"
+            >
               <TrophyIcon className={styles.concludeIconDisabled} />
               Conclude
             </span>
           )}
-          <button
-            type="button"
-            onClick={onUnlink}
-            className={styles.unlinkButton}
-          >
+          <button type="button" onClick={onUnlink} className={styles.unlinkButton}>
             Unlink
           </button>
         </div>

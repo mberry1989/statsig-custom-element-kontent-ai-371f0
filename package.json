@@ -9,6 +9,10 @@
     "build": "tsc && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "biome:check": "biome check .",
+    "biome:ci": "biome ci",
     "preview": "vite preview",
     "sync:content-type": "tsx scripts/sync-content-type/index.ts"
   },
@@ -23,6 +27,8 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.10",
+    "@kontent-ai/biome-config": "0.5.1",
     "@kontent-ai/data-ops": "^2.4.0",
     "@kontent-ai/eslint-config": "2.2.1",
     "@netlify/functions": "^5.1.0",

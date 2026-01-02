@@ -1,6 +1,6 @@
-import { StatsigExperiment } from './components/StatsigExperiment';
-import { CustomElementContext } from './customElement/CustomElementContext';
-import styles from './IntegrationApp.module.css';
+import { StatsigExperiment } from "./components/StatsigExperiment.tsx";
+import { CustomElementContext } from "./customElement/CustomElementContext.tsx";
+import styles from "./IntegrationApp.module.css";
 
 export const IntegrationApp = () => {
   return (
@@ -12,4 +12,4 @@ export const IntegrationApp = () => {
   );
 };
 
-IntegrationApp.displayName = 'IntegrationApp';
+IntegrationApp.displayName = "IntegrationApp";

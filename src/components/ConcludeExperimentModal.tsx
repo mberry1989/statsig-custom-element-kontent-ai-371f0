@@ -1,12 +1,12 @@
-import { type FC, type ReactNode, useState, useCallback } from 'react';
-import type { StatsigExperiment, CleanupResult } from '../types';
-import { cleanupExperiment } from '../api/statsig';
-import { SelectVariantStep } from './conclude-experiment-steps/SelectVariantStep';
-import { ConfirmCleanupStep } from './conclude-experiment-steps/ConfirmCleanupStep';
-import { CleanupProgressStep } from './conclude-experiment-steps/CleanupProgressStep';
-import { CleanupResultStep } from './conclude-experiment-steps/CleanupResultStep';
-import styles from './ConcludeExperimentModal.module.css';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
+import { type FC, type ReactNode, useCallback, useState } from "react";
+import { cleanupExperiment } from "../api/statsig.ts";
+import type { CleanupResult, StatsigExperiment } from "../types/index.ts";
+import styles from "./ConcludeExperimentModal.module.css";
+import { CleanupProgressStep } from "./conclude-experiment-steps/CleanupProgressStep.tsx";
+import { CleanupResultStep } from "./conclude-experiment-steps/CleanupResultStep.tsx";
+import { ConfirmCleanupStep } from "./conclude-experiment-steps/ConfirmCleanupStep.tsx";
+import { SelectVariantStep } from "./conclude-experiment-steps/SelectVariantStep.tsx";
 
 type ConcludeExperimentModalProps = {
   readonly experiment: StatsigExperiment;
@@ -17,13 +17,13 @@ type ConcludeExperimentModalProps = {
   readonly onCompleted: () => void;
 };
 
-type WinningVariant = 'control' | 'test';
+type WinningVariant = "control" | "test";
 
-type Step = 'select' | 'confirm' | 'progress' | 'result';
+type Step = "select" | "confirm" | "progress" | "result";
 
 const getGroupId = (experiment: StatsigExperiment, variantName: WinningVariant): string | null => {
   const group = experiment.groups?.find((g) => g.name === variantName);
-  return group ? (group as unknown as { id?: string }).id ?? variantName : variantName;
+  return group ? ((group as unknown as { id?: string }).id ?? variantName) : variantName;
 };
 
 export const ConcludeExperimentModal: FC<ConcludeExperimentModalProps> = ({
@@ -34,37 +34,40 @@ export const ConcludeExperimentModal: FC<ConcludeExperimentModalProps> = ({
   onClose,
   onCompleted,
 }) => {
-  const [step, setStep] = useState<Step>('select');
-  const [selectedVariant, setSelectedVariant] = useState<WinningVariant>('control');
-  const [decisionReason, setDecisionReason] = useState('');
+  const [step, setStep] = useState<Step>("select");
+  const [selectedVariant, setSelectedVariant] = useState<WinningVariant>("control");
+  const [decisionReason, setDecisionReason] = useState("");
   const [result, setResult] = useState<CleanupResult | null>(null);
 
   const { mutate, error } = useMutation({
     mutationFn: cleanupExperiment,
     onSuccess: (data) => {
       setResult(data);
-      setStep('result');
+      setStep("result");
       if (data.success) {
         onCompleted();
       }
     },
     onError: () => {
-      setStep('result');
+      setStep("result");
     },
   });
 
-  const handleOverlayClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  }, [onClose]);
+  const handleOverlayClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.target === e.currentTarget) {
+        onClose();
+      }
+    },
+    [onClose],
+  );
 
   const handleConfirm = useCallback(() => {
-    setStep('confirm');
+    setStep("confirm");
   }, []);
 
   const handleStartCleanup = useCallback(() => {
-    setStep('progress');
+    setStep("progress");
     mutate({
       experimentId: experiment.id,
       experimentItemId,
@@ -74,17 +77,25 @@ export const ConcludeExperimentModal: FC<ConcludeExperimentModalProps> = ({
       variantGroupId: getGroupId(experiment, selectedVariant) ?? selectedVariant,
       decisionReason,
     });
-  }, [experiment, experimentItemId, experimentItemCodename, environmentId, selectedVariant, decisionReason, mutate]);
+  }, [
+    experiment,
+    experimentItemId,
+    experimentItemCodename,
+    environmentId,
+    selectedVariant,
+    decisionReason,
+    mutate,
+  ]);
 
   const handleBack = useCallback(() => {
-    setStep('select');
+    setStep("select");
   }, []);
 
-  const canDismiss = step !== 'progress';
+  const canDismiss = step !== "progress";
 
   const renderStep = (): ReactNode => {
     switch (step) {
-      case 'select':
+      case "select":
         return (
           <SelectVariantStep
             experimentName={experiment.name}
@@ -94,7 +105,7 @@ export const ConcludeExperimentModal: FC<ConcludeExperimentModalProps> = ({
             onContinue={handleConfirm}
           />
         );
-      case 'confirm':
+      case "confirm":
         return (
           <ConfirmCleanupStep
             selectedVariant={selectedVariant}
@@ -105,9 +116,9 @@ export const ConcludeExperimentModal: FC<ConcludeExperimentModalProps> = ({
             onClose={onClose}
           />
         );
-      case 'progress':
+      case "progress":
         return <CleanupProgressStep />;
-      case 'result':
+      case "result":
         return (
           <CleanupResultStep
             result={result}
@@ -121,8 +132,11 @@ export const ConcludeExperimentModal: FC<ConcludeExperimentModalProps> = ({
   return (
     <div
       className={styles.overlay}
-      onClick={canDismiss ? handleOverlayClick : undefined}>
-      <div className={styles.modal}>
+      onClick={canDismiss ? handleOverlayClick : undefined}
+      onKeyDown={canDismiss ? (e) => e.key === "Escape" && onClose() : undefined}
+      role="presentation"
+    >
+      <div className={styles.modal} role="dialog" aria-modal="true">
         {renderStep()}
       </div>
     </div>

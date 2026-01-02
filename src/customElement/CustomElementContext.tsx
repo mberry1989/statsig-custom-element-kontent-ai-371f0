@@ -1,6 +1,13 @@
-import React, { type ReactNode, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { Config, isConfig } from "./config";
-import { Value, parseValue } from "./value";
+import React, {
+  type ReactNode,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
+import { type Config, isConfig } from "./config.ts";
+import { parseValue, type Value } from "./value.ts";
 
 export const useConfig = () => useContext(Context).config;
 
@@ -29,7 +36,8 @@ type CustomElementContext = Readonly<{
 
 type ItemInfo = Readonly<{
   id: string;
-}> & ItemChangedDetails;
+}> &
+  ItemChangedDetails;
 
 type CustomElementContextProps = Readonly<{
   height?: number | "default" | "dynamic";
@@ -38,7 +46,9 @@ type CustomElementContextProps = Readonly<{
 
 export const CustomElementContext = (props: CustomElementContextProps) => {
   const [isDisabled, setIsDisabled] = useState(false);
-  const [value, setValue] = useState<Value | null | typeof specialMissingValue>(specialMissingValue);
+  const [value, setValue] = useState<Value | null | typeof specialMissingValue>(
+    specialMissingValue,
+  );
   const [config, setConfig] = useState<Config | typeof specialMissingValue>(specialMissingValue);
   const [error, setError] = useState<string | null>(null);
   const [environmentId, setEnvironmentId] = useState<string | null>(null);
@@ -46,7 +56,13 @@ export const CustomElementContext = (props: CustomElementContextProps) => {
   const [variant, setVariant] = useState<Readonly<{ id: string; codename: string }> | null>(null);
 
   const context = useMemo(() => {
-    if (config === specialMissingValue || value === specialMissingValue || !environmentId || !item || !variant) {
+    if (
+      config === specialMissingValue ||
+      value === specialMissingValue ||
+      !environmentId ||
+      !item ||
+      !variant
+    ) {
       return null;
     }
     return {
@@ -72,7 +88,9 @@ export const CustomElementContext = (props: CustomElementContextProps) => {
       }
       const parsedValue = parseValue(element.value);
       if (parsedValue === "invalidValue") {
-        console.warn(`Custom element received invalid value "${element.value}". Treating it as a missing value.`);
+        console.warn(
+          `Custom element received invalid value "${element.value}". Treating it as a missing value.`,
+        );
       }
 
       setValue(parsedValue === "invalidValue" ? null : parsedValue);
@@ -85,7 +103,7 @@ export const CustomElementContext = (props: CustomElementContextProps) => {
   }, []);
 
   useEffect(() => {
-    CustomElement.observeItemChanges(i => setItem(prev => prev && ({ ...prev, ...i })));
+    CustomElement.observeItemChanges((i) => setItem((prev) => prev && { ...prev, ...i }));
   }, []);
 
   useEffect(() => {
@@ -108,11 +126,7 @@ export const CustomElementContext = (props: CustomElementContextProps) => {
     return <h1>Loading...</h1>;
   }
 
-  return (
-    <Context.Provider value={context}>
-      {props.children}
-    </Context.Provider>
-  )
+  return <Context.Provider value={context}>{props.children}</Context.Provider>;
 };
 
 const Context = React.createContext<CustomElementContext>({
@@ -127,10 +141,13 @@ const Context = React.createContext<CustomElementContext>({
   environmentId: "",
   config: {} as Config,
   isDisabled: true,
-  setValue: () => { },
+  setValue: () => {},
 });
 
-const useDynamicHeight = (isEnabled: boolean, value: Value | null | typeof specialMissingValue) => {
+const useDynamicHeight = (
+  isEnabled: boolean,
+  _value: Value | null | typeof specialMissingValue,
+) => {
   useLayoutEffect(() => {
     if (!isEnabled) {
       return;
@@ -138,7 +155,8 @@ const useDynamicHeight = (isEnabled: boolean, value: Value | null | typeof speci
     const newSize = Math.max(document.documentElement.offsetHeight, 100);
 
     CustomElement.setHeight(Math.ceil(newSize));
-  }, [value, isEnabled]); // recalculate the size when value changes
+  }, [isEnabled]); // recalculate the size when value changes
 };
 
-const specialMissingValue = "This value is special and indicates that a value is missing. This allows having undefined and null as valid values." as const;
+const specialMissingValue =
+  "This value is special and indicates that a value is missing. This allows having undefined and null as valid values." as const;

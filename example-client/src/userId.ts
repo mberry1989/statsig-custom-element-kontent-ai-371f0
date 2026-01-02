@@ -1,4 +1,4 @@
-const USER_ID_KEY = 'statsig_user_id';
+const USER_ID_KEY = "statsig_user_id";
 
 export const getUserId = (): string => {
   const existingId = localStorage.getItem(USER_ID_KEY);

@@ -70,7 +70,10 @@
           "workflow_step": { "codename": "draft" },
           "elements": {
             "title": { "type": "text", "value": "Welcome to Our Store" },
-            "experiments": { "type": "modular_content", "value": [{ "codename": "homepage_cta_experiment" }] }
+            "experiments": {
+              "type": "modular_content",
+              "value": [{ "codename": "homepage_cta_experiment" }]
+            }
           }
         }
       ]

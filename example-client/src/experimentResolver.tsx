@@ -1,7 +1,12 @@
-import { Fragment, type JSX } from 'react';
-import type { IContentItem } from '@kontent-ai/delivery-sdk';
-import type { PortableTextReactResolvers } from '@kontent-ai/rich-text-resolver/utils/react';
-import { parseExperimentId, type ExperimentVariant, type StatsigExperiment, type TextBlock } from './types';
+import type { IContentItem } from "@kontent-ai/delivery-sdk";
+import type { PortableTextReactResolvers } from "@kontent-ai/rich-text-resolver/utils/react";
+import { Fragment, type JSX } from "react";
+import {
+  type ExperimentVariant,
+  parseExperimentId,
+  type StatsigExperiment,
+  type TextBlock,
+} from "./types.ts";
 
 type GetWinningVariant = (experimentId: string) => ExperimentVariant;
 
@@ -11,11 +16,14 @@ const renderTextBlock = (item: TextBlock): JSX.Element => {
   return <p>{item.elements.text.value}</p>;
 };
 
-export const renderContentItem = (item: ContentItem, getWinningVariant: GetWinningVariant): JSX.Element | null => {
+export const renderContentItem = (
+  item: ContentItem,
+  getWinningVariant: GetWinningVariant,
+): JSX.Element | null => {
   switch (item.system.type) {
-    case 'text_block':
+    case "text_block":
       return renderTextBlock(item as TextBlock);
-    case 'statsig_experiment':
+    case "statsig_experiment":
       return renderExperiment(item as StatsigExperiment, getWinningVariant);
     default:
       return <div>Unknown content type: {item.system.type}</div>;
@@ -39,7 +47,9 @@ const renderExperiment = (
     <div className="experiment-content">
       <span className={`variant-badge variant-${variant}`}>{variant.toUpperCase()}</span>
       {winningItems.map((contentItem) => (
-        <Fragment key={contentItem.system.id}>{renderContentItem(contentItem, getWinningVariant)}</Fragment>
+        <Fragment key={contentItem.system.id}>
+          {renderContentItem(contentItem, getWinningVariant)}
+        </Fragment>
       ))}
     </div>
   );
@@ -51,9 +61,7 @@ export const createExperimentAwareResolvers = (
 ): PortableTextReactResolvers => ({
   types: {
     componentOrItem: ({ value }) => {
-      const item = linkedItems.find(
-        (i) => i.system.id === value.componentOrItem._ref,
-      );
+      const item = linkedItems.find((i) => i.system.id === value.componentOrItem._ref);
 
       if (!item) {
         return <div>Content item not found: {value.componentOrItem._ref}</div>;

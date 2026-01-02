@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["@kontent-ai/biome-config/base", "@kontent-ai/biome-config/react"],
+  "files": {
+    "includes": [
+      "!!.netlify",
+      "!!dist",
+      "!!example-client/dist",
+      "!!example-client/node_modules",
+      "!!public"
+    ]
+  },
+  "javascript": {
+    "globals": ["CustomElement"]
+  },
+  "linter": {
+    "rules": {
+      "complexity": {
+        "noVoid": "off"
+      },
+      "a11y": {
+        "noStaticElementInteractions": "off"
+      }
+    }
+  }
+}

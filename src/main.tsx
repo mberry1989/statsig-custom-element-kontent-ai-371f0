@@ -1,9 +1,9 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { EnsureKontentAsParent } from "./customElement/EnsureKontentAsParent";
-import { IntegrationApp } from './IntegrationApp';
-import './index.css';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { EnsureKontentAsParent } from "./customElement/EnsureKontentAsParent.tsx";
+import { IntegrationApp } from "./IntegrationApp.tsx";
+import "./index.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,10 +14,10 @@ const queryClient = new QueryClient({
   },
 });
 
-const rootElement = document.getElementById('root');
+const rootElement = document.getElementById("root");
 
 if (!rootElement) {
-  throw new Error('Cannot find the root element. Please, check your html.');
+  throw new Error("Cannot find the root element. Please, check your html.");
 }
 
 createRoot(rootElement).render(
@@ -27,5 +27,5 @@ createRoot(rootElement).render(
         <IntegrationApp />
       </EnsureKontentAsParent>
     </QueryClientProvider>
-  </StrictMode>
+  </StrictMode>,
 );

@@ -1,6 +1,6 @@
-import type { IContentItem, Elements } from '@kontent-ai/delivery-sdk';
+import type { Elements, IContentItem } from "@kontent-ai/delivery-sdk";
 
-export type ExperimentVariant = 'control' | 'test';
+export type ExperimentVariant = "control" | "test";
 
 /**
  * Text block content type - simple content with a text element
@@ -50,7 +50,9 @@ export type ExperimentContent = TextBlock;
  * Parse experiment ID from custom element JSON value
  */
 export const parseExperimentId = (value: string | null): string | null => {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
   try {
     const parsed = JSON.parse(value) as { experimentId?: string };
     return parsed.experimentId ?? null;

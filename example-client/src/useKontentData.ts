@@ -1,10 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
-import { deliveryClient } from './kontentClient';
-import type { LandingPage, ArticlePage, StatsigExperiment } from './types';
+import { useQuery } from "@tanstack/react-query";
+import { deliveryClient } from "./kontentClient.ts";
+import type { ArticlePage, LandingPage, StatsigExperiment } from "./types.ts";
 
 export const useLandingPage = (codename: string) =>
   useQuery({
-    queryKey: ['landingPage', codename],
+    queryKey: ["landingPage", codename],
     queryFn: async () =>
       deliveryClient
         .item<LandingPage>(codename)
@@ -15,7 +15,7 @@ export const useLandingPage = (codename: string) =>
 
 export const useArticlePage = (codename: string) =>
   useQuery({
-    queryKey: ['articlePage', codename],
+    queryKey: ["articlePage", codename],
     queryFn: async () =>
       deliveryClient
         .item<ArticlePage>(codename)
@@ -25,7 +25,7 @@ export const useArticlePage = (codename: string) =>
   });
 
 export const getLinkedItemsMap = <T extends StatsigExperiment>(
-  linkedItems: ReadonlyArray<T>
+  linkedItems: ReadonlyArray<T>,
 ): ReadonlyMap<string, T> => {
   return new Map(linkedItems.map((item) => [item.system.id, item]));
 };

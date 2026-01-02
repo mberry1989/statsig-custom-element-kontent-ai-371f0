@@ -1,10 +1,10 @@
-import { type FC, useCallback, useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { createExperiment, listExperiments } from '../api/statsig';
-import { SelectExperimentModal } from './SelectExperimentModal';
-import { LightbulbIcon } from '../icons/LightbulbIcon';
-import { SpinnerIcon } from '../icons/SpinnerIcon';
-import styles from './CreateExperiment.module.css';
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { type FC, useCallback, useState } from "react";
+import { createExperiment, listExperiments } from "../api/statsig.ts";
+import { LightbulbIcon } from "../icons/LightbulbIcon.tsx";
+import { SpinnerIcon } from "../icons/SpinnerIcon.tsx";
+import styles from "./CreateExperiment.module.css";
+import { SelectExperimentModal } from "./SelectExperimentModal.tsx";
 
 type ItemInfo = {
   readonly id: string;
@@ -18,17 +18,21 @@ type CreateExperimentProps = {
   readonly isDisabled: boolean;
 };
 
-export const CreateExperiment: FC<CreateExperimentProps> = ({ itemInfo, onCreated, isDisabled }) => {
+export const CreateExperiment: FC<CreateExperimentProps> = ({
+  itemInfo,
+  onCreated,
+  isDisabled,
+}) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isSelectModalOpen, setIsSelectModalOpen] = useState(false);
   const [experimentName, setExperimentName] = useState(itemInfo.codename);
-  const [hypothesis, setHypothesis] = useState('');
+  const [hypothesis, setHypothesis] = useState("");
 
   const { data: experiments, isLoading: isLoadingExperiments } = useQuery({
-    queryKey: ['experiments'],
+    queryKey: ["experiments"],
     queryFn: listExperiments,
   });
-  
+
   const openForm = useCallback(() => {
     setIsFormOpen(true);
   }, []);
@@ -45,10 +49,13 @@ export const CreateExperiment: FC<CreateExperimentProps> = ({ itemInfo, onCreate
     setIsSelectModalOpen(false);
   }, []);
 
-  const handleSelectExperiment = useCallback((experimentId: string) => {
-    onCreated(experimentId);
-    closeSelectModal();
-  }, [onCreated, closeSelectModal]);
+  const handleSelectExperiment = useCallback(
+    (experimentId: string) => {
+      onCreated(experimentId);
+      closeSelectModal();
+    },
+    [onCreated, closeSelectModal],
+  );
 
   const mutation = useMutation({
     mutationFn: createExperiment,
@@ -60,7 +67,9 @@ export const CreateExperiment: FC<CreateExperimentProps> = ({ itemInfo, onCreate
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!experimentName.trim()) return;
+    if (!experimentName.trim()) {
+      return;
+    }
 
     mutation.mutate({
       name: experimentName.trim(),
@@ -77,14 +86,12 @@ export const CreateExperiment: FC<CreateExperimentProps> = ({ itemInfo, onCreate
         <div className={styles.emptyState}>
           <LightbulbIcon className={styles.emptyIcon} />
           <h3 className={styles.emptyTitle}>No experiment linked</h3>
-          <p className={styles.emptyDescription}>Create a new experiment or select an existing one from Statsig.</p>
+          <p className={styles.emptyDescription}>
+            Create a new experiment or select an existing one from Statsig.
+          </p>
           {!isDisabled && (
             <div className={styles.buttonGroup}>
-              <button
-                type="button"
-                onClick={openForm}
-                className={styles.primaryButton}
-              >
+              <button type="button" onClick={openForm} className={styles.primaryButton}>
                 Create New
               </button>
               <button
@@ -92,35 +99,37 @@ export const CreateExperiment: FC<CreateExperimentProps> = ({ itemInfo, onCreate
                 onClick={openSelectModal}
                 className={styles.secondaryButton}
                 disabled={isSelectDisabled}
-                title={isSelectDisabled ? (isLoadingExperiments ? 'Loading experiments...' : 'No experiments available') : undefined}
+                title={
+                  isSelectDisabled
+                    ? isLoadingExperiments
+                      ? "Loading experiments..."
+                      : "No experiments available"
+                    : undefined
+                }
               >
-                {isLoadingExperiments ? 'Loading...' : 'Select Existing'}
+                {isLoadingExperiments ? "Loading..." : "Select Existing"}
               </button>
             </div>
           )}
         </div>
         {isSelectModalOpen && experiments ? (
-<SelectExperimentModal
-  experiments={experiments}
-  onSelect={handleSelectExperiment}
-  onClose={closeSelectModal}
+          <SelectExperimentModal
+            experiments={experiments}
+            onSelect={handleSelectExperiment}
+            onClose={closeSelectModal}
           />
-) : null}
+        ) : null}
       </div>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={styles.formContainer}>
+    <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h3 className={styles.formTitle}>Create Statsig Experiment</h3>
 
       <div className={styles.formFields}>
         <div className={styles.fieldGroup}>
-          <label
-            htmlFor="experimentName"
-            className={styles.label}>
+          <label htmlFor="experimentName" className={styles.label}>
             Experiment Name *
           </label>
           <input
@@ -132,15 +141,11 @@ export const CreateExperiment: FC<CreateExperimentProps> = ({ itemInfo, onCreate
             placeholder="e.g., hero_cta_experiment"
             required
           />
-          <p className={styles.hint}>
-            Use lowercase letters, numbers, and underscores
-          </p>
+          <p className={styles.hint}>Use lowercase letters, numbers, and underscores</p>
         </div>
 
         <div className={styles.fieldGroup}>
-          <label
-            htmlFor="hypothesis"
-            className={styles.label}>
+          <label htmlFor="hypothesis" className={styles.label}>
             Hypothesis (optional)
           </label>
           <textarea
@@ -154,15 +159,17 @@ export const CreateExperiment: FC<CreateExperimentProps> = ({ itemInfo, onCreate
         </div>
 
         <div className={styles.infoBox}>
-          <p><strong>Groups:</strong> control (50%) and test (50%)</p>
+          <p>
+            <strong>Groups:</strong> control (50%) and test (50%)
+          </p>
         </div>
       </div>
 
       {mutation.error ? (
-<div className={styles.errorMessage}>
-          {mutation.error instanceof Error ? mutation.error.message : 'Failed to create experiment'}
+        <div className={styles.errorMessage}>
+          {mutation.error instanceof Error ? mutation.error.message : "Failed to create experiment"}
         </div>
-) : null}
+      ) : null}
 
       <div className={styles.formActions}>
         <button
@@ -183,11 +190,12 @@ export const CreateExperiment: FC<CreateExperimentProps> = ({ itemInfo, onCreate
               <SpinnerIcon
                 className={styles.spinner}
                 trackClassName={styles.spinnerTrack}
-                headClassName={styles.spinnerHead} />
+                headClassName={styles.spinnerHead}
+              />
               Creating...
             </>
           ) : (
-            'Create Experiment'
+            "Create Experiment"
           )}
         </button>
       </div>

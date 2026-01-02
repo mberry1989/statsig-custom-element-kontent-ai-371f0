@@ -1,9 +1,9 @@
-import type { FC } from 'react';
-import { TrophyIcon } from '../../icons/TrophyIcon';
-import { CloseIcon } from '../../icons/CloseIcon';
-import styles from '../ConcludeExperimentModal.module.css';
+import type { FC } from "react";
+import { CloseIcon } from "../../icons/CloseIcon.tsx";
+import { TrophyIcon } from "../../icons/TrophyIcon.tsx";
+import styles from "../ConcludeExperimentModal.module.css";
 
-type WinningVariant = 'control' | 'test';
+type WinningVariant = "control" | "test";
 
 type SelectVariantStepProps = {
   readonly experimentName: string;
@@ -24,10 +24,7 @@ export const SelectVariantStep: FC<SelectVariantStepProps> = ({
     <div className={styles.header}>
       <TrophyIcon className={styles.headerIcon} />
       <h3 className={styles.title}>Conclude Experiment</h3>
-      <button
-        type="button"
-        onClick={onCancel}
-        className={styles.closeButton}>
+      <button type="button" onClick={onCancel} className={styles.closeButton}>
         <CloseIcon />
       </button>
     </div>
@@ -41,8 +38,8 @@ export const SelectVariantStep: FC<SelectVariantStepProps> = ({
             type="radio"
             name="variant"
             value="control"
-            checked={selectedVariant === 'control'}
-            onChange={() => onVariantChange('control')}
+            checked={selectedVariant === "control"}
+            onChange={() => onVariantChange("control")}
             className={styles.radio}
           />
           <span className={styles.variantLabel}>Control</span>
@@ -53,8 +50,8 @@ export const SelectVariantStep: FC<SelectVariantStepProps> = ({
             type="radio"
             name="variant"
             value="test"
-            checked={selectedVariant === 'test'}
-            onChange={() => onVariantChange('test')}
+            checked={selectedVariant === "test"}
+            onChange={() => onVariantChange("test")}
             className={styles.radio}
           />
           <span className={styles.variantLabel}>Test</span>
@@ -63,16 +60,10 @@ export const SelectVariantStep: FC<SelectVariantStepProps> = ({
       </div>
     </div>
     <div className={styles.footer}>
-      <button
-        type="button"
-        onClick={onCancel}
-        className={styles.secondaryButton}>
+      <button type="button" onClick={onCancel} className={styles.secondaryButton}>
         Cancel
       </button>
-      <button
-        type="button"
-        onClick={onContinue}
-        className={styles.primaryButton}>
+      <button type="button" onClick={onContinue} className={styles.primaryButton}>
         Continue
       </button>
     </div>

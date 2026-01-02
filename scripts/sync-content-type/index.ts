@@ -1,9 +1,9 @@
-import { config } from "dotenv";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { syncRun } from "@kontent-ai/data-ops";
-import * as fs from "fs/promises";
-import * as path from "path";
-import { fileURLToPath } from "url";
-import { createExperimentContentType } from "./contentTypeTemplate.js";
+import { config } from "dotenv";
+import { createExperimentContentType } from "./contentTypeTemplate.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,15 +35,19 @@ const loadConfig = (): Config => {
     process.exit(1);
   }
 
-  if (!customElementUrl!.startsWith("https://")) {
+  if (!(environmentId && apiKey && customElementUrl)) {
+    throw new Error("Missing required environment variables");
+  }
+
+  if (!customElementUrl.startsWith("https://")) {
     console.error("CUSTOM_ELEMENT_URL must use HTTPS");
     process.exit(1);
   }
 
   return {
-    environmentId: environmentId!,
-    apiKey: apiKey!,
-    customElementUrl: customElementUrl!,
+    environmentId,
+    apiKey,
+    customElementUrl,
     codename,
   };
 };
@@ -58,7 +62,7 @@ const main = async (): Promise<void> => {
 
   await fs.writeFile(
     path.join(tmpDir, "contentTypes.json"),
-    JSON.stringify([contentType], null, 2)
+    JSON.stringify([contentType], null, 2),
   );
 
   await fs.writeFile(path.join(tmpDir, "contentTypeSnippets.json"), "[]");

@@ -1,6 +1,6 @@
-import type { FC } from 'react';
-import { SpinnerIcon } from '../../icons/SpinnerIcon';
-import styles from '../ConcludeExperimentModal.module.css';
+import type { FC } from "react";
+import { SpinnerIcon } from "../../icons/SpinnerIcon.tsx";
+import styles from "../ConcludeExperimentModal.module.css";
 
 export const CleanupProgressStep: FC = () => (
   <>

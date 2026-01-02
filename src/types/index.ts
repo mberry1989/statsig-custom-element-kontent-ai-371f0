@@ -1,4 +1,4 @@
-export type StatsigExperimentStatus = 'setup' | 'active' | 'decision_made' | 'abandoned';
+export type StatsigExperimentStatus = "setup" | "active" | "decision_made" | "abandoned";
 
 export type StatsigExperimentGroup = {
   readonly name: string;
@@ -24,8 +24,8 @@ type CleanupError = {
 };
 
 export type ExperimentScenario =
-  | { readonly type: 'linked_item'; readonly experimentItemId: string }
-  | { readonly type: 'component'; readonly parentItemId: string };
+  | { readonly type: "linked_item"; readonly experimentItemId: string }
+  | { readonly type: "component"; readonly parentItemId: string };
 
 export type ComponentSearchResult = {
   readonly elementId: string;

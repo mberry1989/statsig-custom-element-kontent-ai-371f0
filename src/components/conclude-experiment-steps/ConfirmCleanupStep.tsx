@@ -1,9 +1,9 @@
-import type { FC } from 'react';
-import { TrophyIcon } from '../../icons/TrophyIcon';
-import { CloseIcon } from '../../icons/CloseIcon';
-import styles from '../ConcludeExperimentModal.module.css';
+import type { FC } from "react";
+import { CloseIcon } from "../../icons/CloseIcon.tsx";
+import { TrophyIcon } from "../../icons/TrophyIcon.tsx";
+import styles from "../ConcludeExperimentModal.module.css";
 
-type WinningVariant = 'control' | 'test';
+type WinningVariant = "control" | "test";
 
 type ConfirmCleanupStepProps = {
   readonly selectedVariant: WinningVariant;
@@ -29,21 +29,17 @@ export const ConfirmCleanupStep: FC<ConfirmCleanupStepProps> = ({
       <div className={styles.header}>
         <TrophyIcon className={styles.headerIcon} />
         <h3 className={styles.title}>Confirm Cleanup</h3>
-        <button
-          type="button"
-          onClick={onClose}
-          className={styles.closeButton}>
+        <button type="button" onClick={onClose} className={styles.closeButton}>
           <CloseIcon />
         </button>
       </div>
       <div className={styles.content}>
         <p className={styles.description}>
-          You are about to conclude the experiment with <strong>{selectedVariant}</strong> as the winner.
+          You are about to conclude the experiment with <strong>{selectedVariant}</strong> as the
+          winner.
         </p>
         <div className={styles.formGroup}>
-          <label
-            htmlFor="decisionReason"
-            className={styles.label}>
+          <label htmlFor="decisionReason" className={styles.label}>
             Why are you concluding this experiment?
           </label>
           <textarea
@@ -63,15 +59,10 @@ export const ConfirmCleanupStep: FC<ConfirmCleanupStepProps> = ({
             <li>Delete this experiment item</li>
           </ul>
         </div>
-        <div className={styles.warning}>
-          This action cannot be undone.
-        </div>
+        <div className={styles.warning}>This action cannot be undone.</div>
       </div>
       <div className={styles.footer}>
-        <button
-          type="button"
-          onClick={onBack}
-          className={styles.secondaryButton}>
+        <button type="button" onClick={onBack} className={styles.secondaryButton}>
           Back
         </button>
         <button

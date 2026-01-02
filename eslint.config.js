@@ -1,6 +1,13 @@
-import kontentAiReactConfig from "@kontent-ai/eslint-config/react";
 import kontentAiConfig from "@kontent-ai/eslint-config";
+import kontentAiReactConfig from "@kontent-ai/eslint-config/react";
 import { defineConfig } from "eslint/config";
+
+// Formatting rules are disabled since we use Biome for formatting
+const formattingRulesOff = {
+  "react/jsx-max-props-per-line": "off",
+  "react/jsx-first-prop-new-line": "off",
+  "react/jsx-closing-bracket-location": "off",
+};
 
 export default defineConfig([
   {
@@ -16,15 +23,21 @@ export default defineConfig([
   {
     extends: [kontentAiReactConfig],
     files: ["src/**/*.ts", "src/**/*.tsx"],
+    rules: formattingRulesOff,
   },
   {
     extends: [kontentAiReactConfig],
-    files: ["example-client/src/**/*.ts", "example-client/src/**/*.tsx", "example-client/scripts/**/*.ts"],
+    files: [
+      "example-client/src/**/*.ts",
+      "example-client/src/**/*.tsx",
+      "example-client/scripts/**/*.ts",
+    ],
     languageOptions: {
       parserOptions: {
         project: "./example-client/tsconfig.json",
       },
     },
+    rules: formattingRulesOff,
   },
   {
     extends: [kontentAiConfig],

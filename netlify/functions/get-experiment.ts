@@ -1,6 +1,6 @@
-import type { Handler, HandlerEvent } from '@netlify/functions';
-import { expectEnvVars, handleCorsRequests, responses } from './utils/http';
-import { getExperiment } from './utils/statsig';
+import type { Handler, HandlerEvent } from "@netlify/functions";
+import { expectEnvVars, handleCorsRequests, responses } from "./utils/http.ts";
+import { getExperiment } from "./utils/statsig.ts";
 
 const allowedMethods = ["GET"] as const;
 
@@ -30,6 +30,6 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (result.result === null) {
     return responses.notFound("Experiment not found", allowedMethods);
   }
-  
+
   return responses.ok(result.result, allowedMethods);
 };

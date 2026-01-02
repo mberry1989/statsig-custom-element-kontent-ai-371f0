@@ -1,15 +1,15 @@
-import type { StatsigExperiment, CleanupResult } from '../types';
+import type { CleanupResult, StatsigExperiment } from "../types/index.ts";
 
 type ErrorResponse = { readonly error?: string };
 
 const getBaseUrl = (): string => {
   // In development with Netlify Dev, functions are at /.netlify/functions/
   // In production, they're at the same path
-  return '/.netlify/functions';
+  return "/.netlify/functions";
 };
 
 const parseErrorResponse = async (response: Response): Promise<ErrorResponse> =>
-  response.json().catch(() => ({ error: 'Unknown error' })) as Promise<ErrorResponse>;
+  response.json().catch(() => ({ error: "Unknown error" })) as Promise<ErrorResponse>;
 
 export const listExperiments = async (): Promise<ReadonlyArray<StatsigExperiment>> => {
   const response = await fetch(`${getBaseUrl()}/list-experiments`);
@@ -43,11 +43,13 @@ type CreateExperimentParams = {
   readonly description?: string;
 };
 
-export const createExperiment = async (params: CreateExperimentParams): Promise<StatsigExperiment> => {
+export const createExperiment = async (
+  params: CreateExperimentParams,
+): Promise<StatsigExperiment> => {
   const response = await fetch(`${getBaseUrl()}/create-experiment`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(params),
   });
@@ -68,21 +70,23 @@ type CleanupExperimentParams = {
   readonly experimentItemId: string;
   readonly experimentItemCodename: string;
   readonly environmentId: string;
-  readonly winningVariant: 'control' | 'test';
+  readonly winningVariant: "control" | "test";
   readonly variantGroupId: string;
   readonly decisionReason: string;
 };
 
-export const cleanupExperiment = async (params: CleanupExperimentParams): Promise<CleanupResult> => {
+export const cleanupExperiment = async (
+  params: CleanupExperimentParams,
+): Promise<CleanupResult> => {
   const response = await fetch(`${getBaseUrl()}/cleanup-experiment`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(params),
   });
 
-  const data = await response.json() as CleanupResult & ErrorResponse;
+  const data = (await response.json()) as CleanupResult & ErrorResponse;
 
   if (!response.ok) {
     throw new Error(data.error ?? `Failed to cleanup experiment: ${response.status}`);
