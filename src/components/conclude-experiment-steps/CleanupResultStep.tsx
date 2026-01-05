@@ -11,16 +11,18 @@ type CleanupResultStepProps = {
   readonly onClose: () => void;
 };
 
+const isSuccess = (result: CleanupResult | null): boolean => result?.errors.length === 0;
+
 export const CleanupResultStep: FC<CleanupResultStepProps> = ({ result, error, onClose }) => (
   <>
     <div className={styles.header}>
-      {result?.success ? (
+      {isSuccess(result) ? (
         <CheckIcon className={styles.successIcon} />
       ) : (
         <ErrorIcon className={styles.errorIcon} />
       )}
       <h3 className={styles.title}>
-        {result?.success ? "Experiment Concluded" : "Cleanup Failed"}
+        {isSuccess(result) ? "Experiment Concluded" : "Cleanup Failed"}
       </h3>
       <button type="button" onClick={onClose} className={styles.closeButton}>
         <CloseIcon />
@@ -37,20 +39,30 @@ export const CleanupResultStep: FC<CleanupResultStepProps> = ({ result, error, o
           </div>
           <div className={styles.resultItem}>
             <span className={styles.resultInfo}>•</span>
-            <span>Found {result.usagesFound} usage(s)</span>
+            <span>
+              {result.usagesFound === false
+                ? "Failed to find usages"
+                : `Found ${result.usagesFound.length} usage(s)`}
+            </span>
           </div>
           <div className={styles.resultItem}>
             <span
               className={
-                result.usagesReplaced === result.usagesFound
+                result.usagesFound !== false &&
+                result.usagesReplaced.length === result.usagesFound.length
                   ? styles.resultSuccess
                   : styles.resultFailed
               }
             >
-              {result.usagesReplaced === result.usagesFound ? "✓" : "!"}
+              {result.usagesFound !== false &&
+              result.usagesReplaced.length === result.usagesFound.length
+                ? "✓"
+                : "!"}
             </span>
             <span>
-              Replaced {result.usagesReplaced}/{result.usagesFound} reference(s)
+              {result.usagesFound === false
+                ? "Could not replace references"
+                : `Replaced ${result.usagesReplaced.length}/${result.usagesFound.length} reference(s)`}
             </span>
           </div>
           <div className={styles.resultItem}>

@@ -44,7 +44,7 @@ export const ConcludeExperimentModal: FC<ConcludeExperimentModalProps> = ({
     onSuccess: (data) => {
       setResult(data);
       setStep("result");
-      if (data.success) {
+      if (data.errors.length === 0) {
         onCompleted();
       }
     },

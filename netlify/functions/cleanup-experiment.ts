@@ -39,13 +39,17 @@ const CleanupExperimentBodySchema = z.object({
 
 type CleanupExperimentBody = z.infer<typeof CleanupExperimentBodySchema>;
 
-type CleanupResult = {
-  readonly success: boolean;
+export type CleanupError = {
+  readonly step: string;
+  readonly message: string;
+};
+
+export type CleanupResult = {
   readonly statsigConcluded: boolean;
   readonly usagesFound: ReadonlyArray<string> | false;
   readonly usagesReplaced: ReadonlyArray<string>;
   readonly experimentDeleted: boolean;
-  readonly errors: ReadonlyArray<{ readonly step: string; readonly message: string }>;
+  readonly errors: ReadonlyArray<CleanupError>;
 };
 
 export const handler: Handler = async (event) => {
@@ -73,7 +77,7 @@ export const handler: Handler = async (event) => {
     kontentPreviewApiKey,
   );
 
-  return result.success
+  return result.errors.length === 0
     ? responses.ok(result, allowedMethods)
     : responses.internalError(JSON.stringify(result), allowedMethods);
 };
@@ -216,7 +220,6 @@ const performLinkedItemCleanup = async (
   }
 
   return {
-    success: true,
     statsigConcluded: true,
     usagesFound: usagesResult.result.map((u) => u.itemCodename),
     usagesReplaced: replaced,
@@ -286,7 +289,6 @@ const performComponentCleanup = async (
   }
 
   return {
-    success: true,
     statsigConcluded: true,
     usagesFound: [body.experimentItemCodename],
     usagesReplaced: [body.experimentItemCodename],
@@ -296,7 +298,6 @@ const performComponentCleanup = async (
 };
 
 const emptyResult = {
-  success: false,
   statsigConcluded: false,
   usagesFound: false,
   usagesReplaced: [],

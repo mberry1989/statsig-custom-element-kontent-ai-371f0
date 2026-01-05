@@ -18,10 +18,7 @@ export type StatsigExperiment = {
   readonly endTime?: number;
 };
 
-type CleanupError = {
-  readonly step: string;
-  readonly message: string;
-};
+export type { CleanupError, CleanupResult } from "../../netlify/functions/cleanup-experiment.ts";
 
 export type ExperimentScenario =
   | { readonly type: "linked_item"; readonly experimentItemId: string }
@@ -31,15 +28,6 @@ export type ComponentSearchResult = {
   readonly elementId: string;
   readonly componentId: string;
   readonly winningVariantItemIds: ReadonlyArray<string>;
-};
-
-export type CleanupResult = {
-  readonly success: boolean;
-  readonly statsigConcluded: boolean;
-  readonly usagesFound: number;
-  readonly usagesReplaced: number;
-  readonly experimentDeleted: boolean;
-  readonly errors: ReadonlyArray<CleanupError>;
 };
 
 export type CapabilityStatus = {
