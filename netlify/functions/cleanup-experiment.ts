@@ -13,6 +13,7 @@ import {
   replaceExperimentReference,
 } from "./utils/kontent.ts";
 import { concludeExperiment } from "./utils/statsig.ts";
+import { notNull } from "./utils/function.ts";
 
 const allowedMethods = ["POST"] as const;
 
@@ -301,5 +302,3 @@ const emptyResult = {
   experimentDeleted: false,
   errors: [],
 } as const satisfies CleanupResult;
-
-const notNull = <NonNull>(value: NonNull | null): value is NonNull => value !== null;
