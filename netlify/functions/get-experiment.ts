@@ -19,9 +19,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (!varsRes.success) {
     return varsRes.response;
   }
-  const [apiKey] = varsRes.result;
+  const [statsigApiKey] = varsRes.result;
 
-  const result = await getExperiment(id, apiKey);
+  const result = await getExperiment(id, statsigApiKey);
 
   if (!result.success) {
     return responses.internalError(`Statsig API error: ${result.error}`, allowedMethods);

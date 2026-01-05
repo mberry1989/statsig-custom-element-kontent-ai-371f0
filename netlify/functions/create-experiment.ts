@@ -21,7 +21,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (!varsRes.success) {
     return varsRes.response;
   }
-  const [apiKey] = varsRes.result;
+  const [statsigApiKey] = varsRes.result;
 
   const parseResult = CreateExperimentBodySchema.safeParse(parseJsonBody(event.body));
 
@@ -29,7 +29,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
     return responses.badRequest(parseResult.error.message, allowedMethods);
   }
 
-  const result = await createExperiment(apiKey, parseResult.data);
+  const result = await createExperiment(statsigApiKey, parseResult.data);
 
   if (!result.success) {
     return responses.internalError(
