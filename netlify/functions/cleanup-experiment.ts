@@ -2,6 +2,8 @@ import { createDeliveryClient, type IDeliveryClient } from "@kontent-ai/delivery
 import { createManagementClient, type ManagementClient } from "@kontent-ai/management-sdk";
 import type { Handler } from "@netlify/functions";
 import { z } from "zod";
+import { emptyUuid } from "./utils/constants.ts";
+import { notNull } from "./utils/function.ts";
 import { expectEnvVars, handleCorsRequests, parseJsonBody, responses } from "./utils/http.ts";
 import {
   deleteExperimentItem,
@@ -13,8 +15,6 @@ import {
   replaceExperimentReference,
 } from "./utils/kontent.ts";
 import { concludeExperiment } from "./utils/statsig.ts";
-import { notNull } from "./utils/function.ts";
-import { emptyUuid } from "./utils/constants.ts";
 
 const allowedMethods = ["POST"] as const;
 

@@ -6,8 +6,13 @@ import type {
   LanguageVariantModels,
   ManagementClient,
 } from "@kontent-ai/management-sdk";
+import { z } from "zod";
 import type { ComponentSearchResult, ExperimentScenario } from "../../../src/types/index.ts";
 import { emptyUuid } from "./constants.ts";
+
+const LinkedItemReferenceSchema = z.object({ id: z.string() });
+const LinkedItemsArraySchema = z.array(LinkedItemReferenceSchema);
+const ExperimentValueSchema = z.object({ experimentId: z.string() });
 
 const withErrorCatch =
   (scenario: string) =>
@@ -54,8 +59,8 @@ export const getWinningVariantItems = withErrorCatch("getting winning variant it
       return { success: true, result: [] };
     }
 
-    const linkedItems = variantElement.value as ReadonlyArray<{ id: string }>;
-    const itemIds = linkedItems.map((item) => item.id);
+    const parseResult = LinkedItemsArraySchema.safeParse(variantElement.value);
+    const itemIds = parseResult.success ? parseResult.data.map((item) => item.id) : [];
 
     return { success: true, result: itemIds };
   },
@@ -84,8 +89,9 @@ export const replaceExperimentReference = withErrorCatch("replacing experiment r
       const elementInfo = element.element;
       const value = element.value;
 
-      if (Array.isArray(value) && value.every((v) => typeof v === "object" && "id" in v)) {
-        const linkedItems = value as ReadonlyArray<{ id: string }>;
+      const linkedItemsParseResult = LinkedItemsArraySchema.safeParse(value);
+      if (linkedItemsParseResult.success) {
+        const linkedItems = linkedItemsParseResult.data;
         const experimentIndex = linkedItems.findIndex((item) => item.id === experimentItemId);
 
         if (experimentIndex === -1) {
@@ -153,38 +159,24 @@ type Result<R> = Promise<SyncResult<R>>;
 
 type SyncResult<R> = Readonly<{ success: true; result: R } | { success: false; error: string }>;
 
-type ExperimentElementValue = {
-  readonly experimentId: string;
-};
+type ExperimentElementValue = z.infer<typeof ExperimentValueSchema>;
 
 const parseExperimentValue = (value: unknown): ExperimentElementValue | null => {
   if (typeof value !== "string") {
     return null;
   }
   try {
-    const parsed = JSON.parse(value) as unknown;
-    if (typeof parsed === "object" && parsed !== null && "experimentId" in parsed) {
-      return parsed as ExperimentElementValue;
-    }
-    return null;
+    const parsed: unknown = JSON.parse(value);
+    const result = ExperimentValueSchema.safeParse(parsed);
+    return result.success ? result.data : null;
   } catch {
     return null;
   }
 };
 
 const extractLinkedItemIds = (value: unknown): ReadonlyArray<string> => {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-  return value
-    .filter(
-      (item): item is { readonly id: string } =>
-        typeof item === "object" &&
-        item !== null &&
-        "id" in item &&
-        typeof (item as { id: unknown }).id === "string",
-    )
-    .map((item) => item.id);
+  const parseResult = LinkedItemsArraySchema.safeParse(value);
+  return parseResult.success ? parseResult.data.map((item) => item.id) : [];
 };
 
 const isExperimentComponent = (

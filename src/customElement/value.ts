@@ -1,7 +1,10 @@
-// The value stores the Statsig experiment ID
-export type Value = Readonly<{
-  experimentId: string;
-}>;
+import { z } from "zod";
+
+const ValueSchema = z.object({
+  experimentId: z.string(),
+});
+
+export type Value = z.infer<typeof ValueSchema>;
 
 export const parseValue = (input: string | null): Value | null | "invalidValue" => {
   if (input === null) {
@@ -10,15 +13,9 @@ export const parseValue = (input: string | null): Value | null | "invalidValue" 
 
   try {
     const parsedValue: unknown = JSON.parse(input);
-
-    return isValidValue(parsedValue) ? parsedValue : "invalidValue";
+    const result = ValueSchema.safeParse(parsedValue);
+    return result.success ? result.data : "invalidValue";
   } catch {
     return "invalidValue";
   }
 };
-
-const isValidValue = (obj: unknown): obj is Value =>
-  typeof obj === "object" &&
-  obj !== null &&
-  "experimentId" in obj &&
-  typeof (obj as Value).experimentId === "string";
