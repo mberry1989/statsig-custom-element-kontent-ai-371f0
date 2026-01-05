@@ -133,7 +133,7 @@ Instead of manually creating the Experiment content type, you can automatically 
 
 ### Configuration
 
-Set the following environment variables in your `.env` file (copy from `.env.example`):
+Set the following environment variables in your `.env` file (copy from `.env.example` `cp .env.example .env`):
 
 | Variable | Required | Description |
 |----------|----------|-------------|
