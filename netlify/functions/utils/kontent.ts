@@ -48,11 +48,9 @@ export const getWinningVariantItems = withErrorCatch("getting winning variant it
     variant: LanguageVariantModels.ContentItemLanguageVariant,
     winningVariant: "control" | "test",
   ): SyncResult<ReadonlyArray<string>> => {
-    const variantElement = variant.elements.find(
-      (el) => "element" in el && el.element.codename === winningVariant,
-    );
+    const variantElement = variant.elements.find((el) => el.element.codename === winningVariant);
 
-    if (!(variantElement && "value" in variantElement)) {
+    if (!variantElement) {
       return { success: true, result: [] };
     }
 
@@ -253,12 +251,9 @@ export const replaceComponentWithWinningVariant = withErrorCatch(
       .catch(() => {}); // Item might already be in draft - continue
 
     const updatedElements = variant.elements.map((element) => {
-      if (!("element" in element) || element.element.id !== elementId) {
+      if (element.element.id !== elementId) {
         return element;
       }
-
-      const value = "value" in element ? element.value : "";
-      const components = "components" in element ? element.components : [];
 
       const winningItemsHtml = winningItemIds
         .map(
@@ -292,9 +287,9 @@ export const replaceComponentWithWinningVariant = withErrorCatch(
             })),
           }));
 
-      const newValue = replacePatternInString(value);
+      const newValue = replacePatternInString(element.value);
 
-      const newComponents = processComponentsRecursively(components);
+      const newComponents = processComponentsRecursively(element.components);
 
       return {
         element: element.element,
@@ -329,10 +324,6 @@ export const findComponentWithExperiment = withErrorCatch("finding component wit
       experimentType.elements.find((el) => el.codename === winningVariant)?.id ?? "";
 
     for (const element of variant.elements) {
-      if (!("components" in element)) {
-        continue;
-      }
-
       if (element.components.length === 0) {
         continue;
       }
@@ -401,10 +392,10 @@ export const determineExperimentScenario = withErrorCatch("determining experimen
       typeResponse.data.elements.find((el) => el.codename === "statsig_a_b_testing")?.id ?? "";
 
     const statsigElement = variantResponse.data.elements.find(
-      (el) => "element" in el && el.element.id === statsigElementId,
+      (el) => el.element.id === statsigElementId,
     );
 
-    if (!(statsigElement && "value" in statsigElement)) {
+    if (!statsigElement) {
       return {
         success: true,
         result: { type: "component", parentItemId: itemId },
