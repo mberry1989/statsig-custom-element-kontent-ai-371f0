@@ -34,7 +34,7 @@ const CleanupExperimentBodySchema = z.object({
   }),
   variantGroupId: z.string().min(1, "Missing variantGroupId parameter"),
   decisionReason: z.string().min(1, "Missing decisionReason parameter"),
-  experimentTypeCodename: z.string().optional().default("experiment"),
+  experimentTypeCodename: z.string().optional().default("statsig_experiment"),
 });
 
 type CleanupExperimentBody = z.infer<typeof CleanupExperimentBodySchema>;
