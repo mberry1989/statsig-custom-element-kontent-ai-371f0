@@ -4,6 +4,7 @@ const STATSIG_API_URL = "https://statsigapi.net/console/v1";
 const API_VERSION = "20240601";
 
 type StatsigApiResponse = { readonly data?: UnknownJson; readonly message?: string };
+type StatsigListApiResponse = { readonly data?: ReadonlyArray<UnknownJson>; readonly message?: string };
 
 export const getExperiment = async (
   experimentId: string,
@@ -40,9 +41,9 @@ export const listExperiments = async (apiKey: string): Result<ReadonlyArray<Unkn
     return { success: false, error: await response.text() };
   }
 
-  const result = (await response.json()) as StatsigApiResponse;
+  const result = (await response.json()) as StatsigListApiResponse;
 
-  return { success: true, result: (result.data as ReadonlyArray<UnknownJson>) ?? [] };
+  return { success: true, result: result.data ?? [] };
 };
 
 type CreateParams = Readonly<{
