@@ -28,7 +28,7 @@ export const getExperiment = async (
   return { success: true, result: result.data ?? {} };
 };
 
-export const listExperiments = async (apiKey: string): Result<UnknownJson> => {
+export const listExperiments = async (apiKey: string): Result<ReadonlyArray<UnknownJson>> => {
   const response = await fetch(`${STATSIG_API_URL}/experiments`, {
     headers: {
       "STATSIG-API-KEY": apiKey,
@@ -40,9 +40,9 @@ export const listExperiments = async (apiKey: string): Result<UnknownJson> => {
     return { success: false, error: await response.text() };
   }
 
-  const result = (await response.json()) as UnknownJson;
+  const result = (await response.json()) as StatsigApiResponse;
 
-  return { success: true, result };
+  return { success: true, result: (result.data as ReadonlyArray<UnknownJson>) ?? [] };
 };
 
 type CreateParams = Readonly<{
